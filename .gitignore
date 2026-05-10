@@ -1,17 +1,25 @@
-# Compiled class file
+# ===== Java =====
 *.class
-
-# Log file
 *.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
+hs_err_pid*
+replay_pid*
 
-# Package Files #
-*.jar
+# ===== Maven =====
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ===== Empaquetados (no van al repo) =====
 *.war
 *.nar
 *.ear
@@ -19,6 +27,50 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# ===== IntelliJ IDEA =====
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ===== VS Code =====
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# ===== Eclipse =====
+.apt_generated/
+.springBeans
+.sts4-cache/
+
+# ===== Spring Boot - archivos con secretos =====
+application-local.properties
+application-dev.properties
+application-prod.properties
+application-secret.properties
+.env
+.env.local
+.env.*.local
+
+# ===== Bases de datos locales (H2, etc.) =====
+*.db
+*.h2.db
+*.mv.db
+*.trace.db
+
+# ===== Sistema operativo =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Credenciales y llaves (NUNCA al repo) =====
+secrets/
+credentials.txt
+credenciales.txt
+*.pem
+*.key
+id_rsa
+id_ed25519
