@@ -1,4 +1,4 @@
-package co.edu.unbosque.proyecto_bd1;
+package co.edu.unbosque.proyecto_bd1.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
