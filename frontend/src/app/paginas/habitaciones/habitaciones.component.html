@@ -1,0 +1,29 @@
+<div class="page-header">
+  <h1 class="titulo">Habitaciones</h1>
+  <p class="subtitulo">Consultar disponibilidad y catalogo del hotel</p>
+</div>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Numero</th>
+      <th>Piso</th>
+      <th>Tipo</th>
+      <th>Capacidad</th>
+      <th>Precio base</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let h of habitaciones">
+      <td>{{ h.idHabitacion }}</td>
+      <td><strong>{{ h.numero }}</strong></td>
+      <td>{{ h.piso }}</td>
+      <td>{{ h.tipo }}</td>
+      <td>{{ h.capacidadMaxima }}</td>
+      <td>{{ h.precioBase | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+      <td><span [class]="claseEstado(h.estado)">{{ h.estado }}</span></td>
+    </tr>
+  </tbody>
+</table>

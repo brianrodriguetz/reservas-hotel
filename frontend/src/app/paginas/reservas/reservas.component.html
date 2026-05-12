@@ -1,0 +1,40 @@
+<div class="page-header">
+  <h1 class="titulo">Gestion de Reservas</h1>
+  <p class="subtitulo">Crear, consultar y cancelar reservas</p>
+</div>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Habitacion</th>
+      <th>Entrada</th>
+      <th>Salida</th>
+      <th>Huespedes</th>
+      <th>Estado</th>
+      <th>Total</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of reservas">
+      <td>{{ r.idReserva }}</td>
+      <td>{{ r.nombreCliente }}</td>
+      <td>Hab {{ r.numeroHabitacion }}</td>
+      <td>{{ r.fechaEntrada }}</td>
+      <td>{{ r.fechaSalida }}</td>
+      <td>{{ r.numeroHuespedes }}</td>
+      <td><span [class]="claseEstado(r.estado)">{{ r.estado }}</span></td>
+      <td>{{ r.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+      <td>
+        <button
+          *ngIf="r.estado !== 'Cancelada' && r.estado !== 'Finalizada'"
+          class="btn btn-peligro btn-mini"
+          (click)="cancelar(r)">
+          Cancelar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

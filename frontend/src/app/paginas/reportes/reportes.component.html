@@ -1,0 +1,32 @@
+<div class="page-header">
+  <h1 class="titulo">Reportes Administrativos</h1>
+  <p class="subtitulo">Ocupacion e ingresos consolidados del hotel</p>
+</div>
+
+<h3 class="seccion-titulo">Ocupacion de habitaciones</h3>
+
+<div class="grid-4">
+  <div class="tarjeta" *ngFor="let o of ocupacion">
+    <div class="ind-titulo">{{ o.estado }}</div>
+    <div class="ind-valor" [class]="claseEstado(o.estado)">{{ o.cantidad }}</div>
+  </div>
+</div>
+
+<h3 class="seccion-titulo">Ingresos por metodo de pago</h3>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>Metodo</th>
+      <th>Cantidad de pagos</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let m of porMetodo">
+      <td>{{ m.metodo }}</td>
+      <td>{{ m.cantidad }}</td>
+      <td><strong>{{ m.total | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></td>
+    </tr>
+  </tbody>
+</table>

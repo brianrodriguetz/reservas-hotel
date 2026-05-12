@@ -1,0 +1,75 @@
+<div class="login-page">
+
+  <aside class="lateral">
+    <div class="lateral-contenido">
+      <h1 class="lateral-titulo">HOTEL DIABLOS ROJOS</h1>
+      <p class="lateral-subtitulo">Sistema de Reservas</p>
+      <p class="lateral-mensaje">
+        Bienvenido al sistema de gestion hotelera.<br>
+        Ingrese sus credenciales para continuar.
+      </p>
+    </div>
+
+    <div class="lateral-pie">
+      Universidad El Bosque · Bases de Datos I
+    </div>
+  </aside>
+
+  <section class="zona-formulario">
+    <div class="formulario-contenedor">
+
+      <h2 class="titulo">Iniciar Sesion</h2>
+      <p class="subtitulo">Por favor ingrese sus credenciales</p>
+
+      <form [formGroup]="formulario" (ngSubmit)="ingresar()" class="form-login">
+
+        <div class="campo">
+          <label for="usuario">Usuario</label>
+          <input
+            id="usuario"
+            type="text"
+            formControlName="usuario"
+            placeholder="Ingrese su usuario"
+            autocomplete="username">
+          <div *ngIf="campoInvalido('usuario')" class="error-text">
+            Usuario obligatorio (minimo 3 caracteres)
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="password">Contrasena</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Ingrese su contrasena"
+            autocomplete="current-password">
+          <div *ngIf="campoInvalido('password')" class="error-text">
+            Contrasena obligatoria (minimo 3 caracteres)
+          </div>
+        </div>
+
+        <div *ngIf="mensajeError" class="error-banner">
+          {{ mensajeError }}
+        </div>
+
+        <button type="submit" class="btn btn-primario btn-grande" [disabled]="cargando">
+          <span *ngIf="!cargando">Ingresar</span>
+          <span *ngIf="cargando">Ingresando...</span>
+        </button>
+
+        <button type="button" class="btn btn-secundario btn-grande" (click)="salir()">
+          Salir
+        </button>
+
+        <div class="login-hint">
+          Credenciales de prueba:
+          <strong>admin / admin</strong> o <strong>empleado / empleado</strong>
+        </div>
+
+      </form>
+
+    </div>
+  </section>
+
+</div>

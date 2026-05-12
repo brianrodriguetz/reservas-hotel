@@ -1,0 +1,46 @@
+<div class="page-header">
+  <h1 class="titulo">Panel Principal</h1>
+  <p class="subtitulo">Resumen del sistema en tiempo real</p>
+</div>
+
+<div class="grid-4" *ngIf="indicadores">
+
+  <div class="indicador">
+    <span class="ind-titulo">Clientes registrados</span>
+    <span class="ind-valor color-primario">{{ indicadores.totalClientes }}</span>
+    <div class="ind-barra fondo-primario"></div>
+  </div>
+
+  <div class="indicador">
+    <span class="ind-titulo">Reservas activas</span>
+    <span class="ind-valor color-acento">{{ indicadores.reservasActivas }}</span>
+    <div class="ind-barra fondo-acento"></div>
+  </div>
+
+  <div class="indicador">
+    <span class="ind-titulo">Habitaciones libres</span>
+    <span class="ind-valor color-exito">{{ indicadores.habitacionesDisponibles }}</span>
+    <div class="ind-barra fondo-exito"></div>
+  </div>
+
+  <div class="indicador">
+    <span class="ind-titulo">Ingresos del mes</span>
+    <span class="ind-valor color-morado">
+      {{ indicadores.ingresosMes | currency:'COP':'symbol-narrow':'1.0-0' }}
+    </span>
+    <div class="ind-barra fondo-morado"></div>
+  </div>
+
+</div>
+
+<div class="tarjeta mensaje-bienvenida">
+  <h3 class="tarjeta-titulo">Bienvenido al sistema</h3>
+  <p>
+    Use el menu lateral para gestionar clientes, reservas, habitaciones y pagos.
+    Si es administrador, tambien puede acceder a la gestion de empleados y a los
+    reportes consolidados del hotel.
+  </p>
+  <p class="pie-mensaje">
+    Hotel Diablos Rojos · Universidad El Bosque · Bases de Datos I
+  </p>
+</div>

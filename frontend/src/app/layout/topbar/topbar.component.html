@@ -1,0 +1,13 @@
+<header class="topbar" *ngIf="sesion">
+
+  <div class="info-usuario">
+    <span class="saludo">Hola, {{ sesion.nombreCompleto }}</span>
+    <span class="separador">·</span>
+    <span class="rol">{{ sesion.cargo }}</span>
+  </div>
+
+  <div class="avatar">
+    {{ getInicial() }}
+  </div>
+
+</header>

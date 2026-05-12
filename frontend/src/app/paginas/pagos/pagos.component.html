@@ -1,0 +1,31 @@
+<div class="page-header">
+  <h1 class="titulo">Gestion de Pagos</h1>
+  <p class="subtitulo">Registrar pagos y consultar el historial</p>
+</div>
+
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID Pago</th>
+      <th>Fecha</th>
+      <th>Reserva</th>
+      <th>Cliente</th>
+      <th>Monto</th>
+      <th>Metodo</th>
+      <th>Estado</th>
+      <th># Transaccion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let p of pagos">
+      <td>{{ p.idPago }}</td>
+      <td>{{ p.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
+      <td>#{{ p.idReserva }}</td>
+      <td>{{ p.nombreCliente }}</td>
+      <td><strong>{{ p.monto | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></td>
+      <td>{{ p.metodo }}</td>
+      <td><span class="badge badge-exito">{{ p.estado }}</span></td>
+      <td>{{ p.numeroTransaccion || '—' }}</td>
+    </tr>
+  </tbody>
+</table>
