@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Diablos Rojos - Reservas</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/paginas.css">
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-titulo">HOTEL</div>
+        <div class="logo-subtitulo">Diablos Rojos</div>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="dashboard.html" class="menu-item">Inicio</a>
+        <a href="clientes.html" class="menu-item">Clientes</a>
+        <a href="reservas.html" class="menu-item">Reservas</a>
+        <a href="habitaciones.html" class="menu-item">Habitaciones</a>
+        <a href="pagos.html" class="menu-item">Pagos</a>
+        <div id="menu-separador" class="separador"></div>
+        <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
+        <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button>
+      </div>
+    </aside>
+
+    <div class="contenido-principal">
+      <header class="topbar">
+        <div class="info-usuario">
+          <span id="topbar-nombre" class="saludo"></span>
+          <span class="separador-texto">·</span>
+          <span id="topbar-rol" class="rol"></span>
+        </div>
+        <div id="topbar-avatar" class="avatar"></div>
+      </header>
+
+      <main class="contenido">
+
+        <div class="page-header">
+          <h1 class="titulo">Gestion de Reservas</h1>
+          <p class="subtitulo">Crear, consultar y cancelar reservas</p>
+        </div>
+
+        <div id="contenedor-mensaje" class="mensaje oculto"></div>
+
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Habitacion</th>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Huespedes</th>
+              <th>Estado</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-reservas"></tbody>
+        </table>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/datos.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/comunes.js"></script>
+  <script>
+    inicializarLayout();
+
+    // Clase visual del estado
+    function claseEstado(estado) {
+      if (estado === 'Confirmada') return 'badge badge-primario';
+      if (estado === 'Pendiente') return 'badge badge-acento';
+      if (estado === 'En Curso') return 'badge badge-exito';
+      if (estado === 'Cancelada' || estado === 'No Show') return 'badge badge-peligro';
+      return 'badge';
+    }
+
+    // Carga tabla
+    function cargarTabla() {
+      const tbody = document.getElementById('tabla-reservas');
+      tbody.innerHTML = '';
+
+      for (let i = 0; i < RESERVAS.length; i++) {
+        const r = RESERVAS[i];
+        const puedeCancelar = r.estado !== 'Cancelada' && r.estado !== 'Finalizada';
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + r.idReserva + '</td>' +
+          '<td>' + r.nombreCliente + '</td>' +
+          '<td>Hab ' + r.numeroHabitacion + '</td>' +
+          '<td>' + r.fechaEntrada + '</td>' +
+          '<td>' + r.fechaSalida + '</td>' +
+          '<td>' + r.numeroHuespedes + '</td>' +
+          '<td><span class="' + claseEstado(r.estado) + '">' + r.estado + '</span></td>' +
+          '<td>' + formatearMoneda(r.total) + '</td>' +
+          '<td>' + (puedeCancelar
+            ? '<button class="btn btn-peligro btn-mini" onclick="cancelarReserva(' + r.idReserva + ')">Cancelar</button>'
+            : '—') + '</td>';
+        tbody.appendChild(tr);
+      }
+    }
+
+    // Cancela reserva
+    function cancelarReserva(idReserva) {
+      if (!confirm('Cancelar la reserva numero ' + idReserva + '?')) {
+        return;
+      }
+      for (let i = 0; i < RESERVAS.length; i++) {
+        if (RESERVAS[i].idReserva === idReserva) {
+          RESERVAS[i].estado = 'Cancelada';
+          break;
+        }
+      }
+      mostrarMensaje('exito', 'Reserva cancelada');
+      cargarTabla();
+    }
+
+    cargarTabla();
+  </script>
+
+</body>
+</html>

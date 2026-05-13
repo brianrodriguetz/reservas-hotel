@@ -1,17 +1,18 @@
-# Hotel Diablos Rojos - Frontend
+# Hotel Diablos Rojos - Frontend HTML/CSS/JS
 
-Frontend Angular 17 para el sistema de gestion hotelera.
+Frontend del sistema de gestion hotelera construido con HTML, CSS y JavaScript puro.
+Sin frameworks. No requiere compilacion ni instalacion de paquetes.
 
 ## Como ejecutar
 
-```
-npm install
-npm start
-```
+**Opcion 1 (la mas simple):**
+Abrir directamente el archivo `index.html` con doble click.
 
-Abrir http://localhost:4200
+**Opcion 2 (recomendada):**
+Si tienes Visual Studio Code, instala la extension "Live Server".
+Despues click derecho sobre `index.html` -> "Open with Live Server".
 
-## Credenciales
+## Credenciales de prueba
 
 | Usuario  | Contrasena | Rol           |
 |----------|------------|---------------|
@@ -20,9 +21,31 @@ Abrir http://localhost:4200
 
 ## Estructura
 
-- `src/app/core/modelos` - Interfaces TypeScript
-- `src/app/core/servicios` - Servicios con datos mock
-- `src/app/core/datos` - Datos de prueba en memoria
-- `src/app/core/guards` - Guards de rutas
-- `src/app/layout` - Sidebar, topbar y layout principal
-- `src/app/paginas` - Pantallas de la aplicacion
+```
+hotel-web/
+├── index.html              -> Pagina de login
+├── css/
+│   ├── estilos.css         -> Estilos generales (colores, botones, tablas)
+│   ├── layout.css          -> Sidebar y topbar
+│   ├── login.css           -> Pantalla de login
+│   └── paginas.css         -> Indicadores y formularios
+├── js/
+│   ├── datos.js            -> Datos de prueba en memoria
+│   ├── auth.js             -> Funciones de inicio de sesion
+│   └── comunes.js          -> Helpers compartidos
+└── paginas/
+    ├── dashboard.html      -> Panel principal con indicadores
+    ├── clientes.html       -> CRUD de clientes
+    ├── reservas.html       -> Lista y cancelacion de reservas
+    ├── habitaciones.html   -> Catalogo de habitaciones
+    ├── pagos.html          -> Historial de pagos
+    ├── empleados.html      -> Gestion de empleados (solo admin)
+    └── reportes.html       -> Reportes administrativos (solo admin)
+```
+
+## Notas
+
+- Los datos son mock (en memoria). Al recargar la pagina se reinician.
+- La sesion se guarda en localStorage del navegador.
+- Si el usuario es Recepcionista, las opciones de Empleados y Reportes
+  no aparecen en el menu.

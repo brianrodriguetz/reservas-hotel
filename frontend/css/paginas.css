@@ -1,0 +1,76 @@
+/* Dashboard */
+.indicador {
+  background: white;
+  border-radius: 10px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ind-titulo {
+  font-size: 11pt;
+  color: var(--color-texto-suave);
+}
+
+.ind-valor {
+  font-size: 28pt;
+  font-weight: bold;
+  line-height: 1.1;
+}
+
+.ind-barra {
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+.color-primario { color: var(--color-primario); }
+.color-acento { color: var(--color-acento); }
+.color-exito { color: var(--color-exito); }
+.color-peligro { color: var(--color-peligro); }
+.color-morado { color: #7850A0; }
+
+.fondo-primario { background: var(--color-primario); }
+.fondo-acento { background: var(--color-acento); }
+.fondo-exito { background: var(--color-exito); }
+.fondo-morado { background: #7850A0; }
+
+.mensaje-bienvenida {
+  margin-top: 22px;
+}
+
+.pie-mensaje {
+  color: var(--color-texto-suave);
+  margin-top: 10px;
+}
+
+/* Busqueda */
+.busqueda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.busqueda label {
+  margin: 0;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.busqueda input {
+  flex: 1;
+}
+
+/* Formulario */
+.formulario {
+  margin-top: 22px;
+}
+
+.btn-mini {
+  padding: 5px 12px;
+  font-size: 11pt;
+}

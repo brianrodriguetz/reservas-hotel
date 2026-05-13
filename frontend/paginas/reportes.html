@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Diablos Rojos - Reportes</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/paginas.css">
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-titulo">HOTEL</div>
+        <div class="logo-subtitulo">Diablos Rojos</div>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="dashboard.html" class="menu-item">Inicio</a>
+        <a href="clientes.html" class="menu-item">Clientes</a>
+        <a href="reservas.html" class="menu-item">Reservas</a>
+        <a href="habitaciones.html" class="menu-item">Habitaciones</a>
+        <a href="pagos.html" class="menu-item">Pagos</a>
+        <div id="menu-separador" class="separador"></div>
+        <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
+        <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button>
+      </div>
+    </aside>
+
+    <div class="contenido-principal">
+      <header class="topbar">
+        <div class="info-usuario">
+          <span id="topbar-nombre" class="saludo"></span>
+          <span class="separador-texto">·</span>
+          <span id="topbar-rol" class="rol"></span>
+        </div>
+        <div id="topbar-avatar" class="avatar"></div>
+      </header>
+
+      <main class="contenido">
+
+        <div class="page-header">
+          <h1 class="titulo">Reportes Administrativos</h1>
+          <p class="subtitulo">Ocupacion e ingresos consolidados del hotel</p>
+        </div>
+
+        <h3 class="seccion-titulo">Ocupacion de habitaciones</h3>
+        <div id="grid-ocupacion" class="grid-4"></div>
+
+        <h3 class="seccion-titulo">Ingresos por metodo de pago</h3>
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Metodo</th>
+              <th>Cantidad de pagos</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-metodos"></tbody>
+        </table>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/datos.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/comunes.js"></script>
+  <script>
+    verificarAdmin();
+    inicializarLayout();
+
+    // Clase visual del estado
+    function claseEstadoColor(estado) {
+      if (estado === 'Disponible') return 'color-exito';
+      if (estado === 'Ocupada') return 'color-acento';
+      if (estado === 'En Mantenimiento') return 'color-peligro';
+      return 'color-primario';
+    }
+
+    // Ocupacion por estado
+    const conteoEstados = {};
+    for (let i = 0; i < HABITACIONES.length; i++) {
+      const e = HABITACIONES[i].estado;
+      conteoEstados[e] = (conteoEstados[e] || 0) + 1;
+    }
+    const gridOcup = document.getElementById('grid-ocupacion');
+    for (const estado in conteoEstados) {
+      const div = document.createElement('div');
+      div.className = 'tarjeta';
+      div.innerHTML =
+        '<div class="ind-titulo">' + estado + '</div>' +
+        '<div class="ind-valor ' + claseEstadoColor(estado) + '">' + conteoEstados[estado] + '</div>';
+      gridOcup.appendChild(div);
+    }
+
+    // Ingresos por metodo
+    const mapaMetodos = {};
+    for (let i = 0; i < PAGOS.length; i++) {
+      const p = PAGOS[i];
+      if (p.estado !== 'Aprobado') continue;
+      if (!mapaMetodos[p.metodo]) {
+        mapaMetodos[p.metodo] = { cantidad: 0, total: 0 };
+      }
+      mapaMetodos[p.metodo].cantidad++;
+      mapaMetodos[p.metodo].total += p.monto;
+    }
+    const tbodyMet = document.getElementById('tabla-metodos');
+    for (const metodo in mapaMetodos) {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + metodo + '</td>' +
+        '<td>' + mapaMetodos[metodo].cantidad + '</td>' +
+        '<td><strong>' + formatearMoneda(mapaMetodos[metodo].total) + '</strong></td>';
+      tbodyMet.appendChild(tr);
+    }
+  </script>
+
+</body>
+</html>

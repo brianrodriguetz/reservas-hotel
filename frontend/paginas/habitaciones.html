@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Diablos Rojos - Habitaciones</title>
+  <link rel="stylesheet" href="../css/estilos.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/paginas.css">
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-titulo">HOTEL</div>
+        <div class="logo-subtitulo">Diablos Rojos</div>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="dashboard.html" class="menu-item">Inicio</a>
+        <a href="clientes.html" class="menu-item">Clientes</a>
+        <a href="reservas.html" class="menu-item">Reservas</a>
+        <a href="habitaciones.html" class="menu-item">Habitaciones</a>
+        <a href="pagos.html" class="menu-item">Pagos</a>
+        <div id="menu-separador" class="separador"></div>
+        <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
+        <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button>
+      </div>
+    </aside>
+
+    <div class="contenido-principal">
+      <header class="topbar">
+        <div class="info-usuario">
+          <span id="topbar-nombre" class="saludo"></span>
+          <span class="separador-texto">·</span>
+          <span id="topbar-rol" class="rol"></span>
+        </div>
+        <div id="topbar-avatar" class="avatar"></div>
+      </header>
+
+      <main class="contenido">
+
+        <div class="page-header">
+          <h1 class="titulo">Habitaciones</h1>
+          <p class="subtitulo">Consultar disponibilidad y catalogo del hotel</p>
+        </div>
+
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Numero</th>
+              <th>Piso</th>
+              <th>Tipo</th>
+              <th>Capacidad</th>
+              <th>Precio base</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-habitaciones"></tbody>
+        </table>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/datos.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/comunes.js"></script>
+  <script>
+    inicializarLayout();
+
+    // Clase visual del estado
+    function claseEstado(estado) {
+      if (estado === 'Disponible') return 'badge badge-exito';
+      if (estado === 'Ocupada') return 'badge badge-acento';
+      if (estado === 'En Mantenimiento') return 'badge badge-peligro';
+      return 'badge badge-primario';
+    }
+
+    // Carga tabla
+    const tbody = document.getElementById('tabla-habitaciones');
+    for (let i = 0; i < HABITACIONES.length; i++) {
+      const h = HABITACIONES[i];
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + h.idHabitacion + '</td>' +
+        '<td><strong>' + h.numero + '</strong></td>' +
+        '<td>' + h.piso + '</td>' +
+        '<td>' + h.tipo + '</td>' +
+        '<td>' + h.capacidadMaxima + '</td>' +
+        '<td>' + formatearMoneda(h.precioBase) + '</td>' +
+        '<td><span class="' + claseEstado(h.estado) + '">' + h.estado + '</span></td>';
+      tbody.appendChild(tr);
+    }
+  </script>
+
+</body>
+</html>

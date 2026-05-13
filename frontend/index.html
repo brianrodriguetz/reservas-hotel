@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Diablos Rojos - Inicio de Sesion</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+  <div class="login-page">
+
+    <aside class="lateral">
+      <div class="lateral-contenido">
+        <h1 class="lateral-titulo">HOTEL DIABLOS ROJOS</h1>
+        <p class="lateral-subtitulo">Sistema de Reservas</p>
+        <p class="lateral-mensaje">
+          Bienvenido al sistema de gestion hotelera.<br>
+          Ingrese sus credenciales para continuar.
+        </p>
+      </div>
+
+      <div class="lateral-pie">
+        Universidad El Bosque · Bases de Datos I
+      </div>
+    </aside>
+
+    <section class="zona-formulario">
+      <div class="formulario-contenedor">
+
+        <h2 class="titulo">Iniciar Sesion</h2>
+        <p class="subtitulo">Por favor ingrese sus credenciales</p>
+
+        <form id="form-login" class="form-login">
+
+          <div class="campo">
+            <label for="usuario">Usuario</label>
+            <input id="usuario" type="text" placeholder="Ingrese su usuario" autocomplete="username">
+          </div>
+
+          <div class="campo">
+            <label for="password">Contrasena</label>
+            <input id="password" type="password" placeholder="Ingrese su contrasena" autocomplete="current-password">
+          </div>
+
+          <div id="error-login" class="error-banner oculto"></div>
+
+          <button type="submit" class="btn btn-primario btn-grande">Ingresar</button>
+          <button type="button" class="btn btn-secundario btn-grande" onclick="salirSistema()">Salir</button>
+
+          <div class="login-hint">
+            Credenciales de prueba:
+            <strong>admin / admin</strong> o <strong>empleado / empleado</strong>
+          </div>
+
+        </form>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Si ya hay sesion, redirige
+    if (obtenerSesion()) {
+      window.location.href = 'paginas/dashboard.html';
+    }
+
+    // Manejo del formulario
+    const form = document.getElementById('form-login');
+    const errorBanner = document.getElementById('error-login');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // Validaciones basicas
+      if (usuario.length < 3 || password.length < 3) {
+        mostrarErrorLogin('Usuario y contrasena son obligatorios (minimo 3 caracteres)');
+        return;
+      }
+
+      // Intentar login
+      const sesion = login(usuario, password);
+      if (!sesion) {
+        mostrarErrorLogin('Usuario o contrasena incorrectos');
+        return;
+      }
+
+      // Redirigir al dashboard
+      window.location.href = 'paginas/dashboard.html';
+    });
+
+    function mostrarErrorLogin(texto) {
+      errorBanner.textContent = texto;
+      errorBanner.classList.remove('oculto');
+    }
+
+    function salirSistema() {
+      if (confirm('Esta seguro de salir del sistema?')) {
+        window.close();
+      }
+    }
+  </script>
+
+</body>
+</html>
