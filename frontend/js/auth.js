@@ -1,95 +1,45 @@
 // Funciones de autenticacion
 
-// Inicia sesion
 function login(usuario, password) {
-  // Usuarios de prueba
-  if (usuario === 'admin' && password === 'admin') {
-    const sesion = {
-      idEmpleado: 101,
-      nombreCompleto: 'Brian Rodriguez',
-      usuario: 'admin',
-      cargo: 'Administrador',
-      esAdmin: true
-    };
-    guardarSesion(sesion);
-    return sesion;
+  const credenciales = { admin: 'admin', empleado: 'empleado' };
+  if (!credenciales[usuario] || credenciales[usuario] !== password) {
+    // Busca en lista de empleados (contrasena = usuario por defecto en mock)
+    const emp = EMPLEADOS.find(function(e) { return e.usuario === usuario && e.estado === 'Activo'; });
+    if (!emp) return null;
   }
-
-  if (usuario === 'empleado' && password === 'empleado') {
-    const sesion = {
-      idEmpleado: 102,
-      nombreCompleto: 'Jose Espin',
-      usuario: 'empleado',
-      cargo: 'Recepcionista',
-      esAdmin: false
-    };
-    guardarSesion(sesion);
-    return sesion;
-  }
-
-  // Busca en lista de empleados
-  let encontrado = null;
-  for (let i = 0; i < EMPLEADOS.length; i++) {
-    if (EMPLEADOS[i].usuario === usuario && EMPLEADOS[i].estado === 'Activo') {
-      encontrado = EMPLEADOS[i];
-      break;
-    }
-  }
-
-  if (!encontrado) {
-    return null;
-  }
-
+  const emp = EMPLEADOS.find(function(e) { return e.usuario === usuario; });
+  if (!emp) return null;
   const sesion = {
-    idEmpleado: encontrado.idPersona,
-    nombreCompleto: encontrado.nombre + ' ' + encontrado.apellido,
-    usuario: encontrado.usuario,
-    cargo: encontrado.cargo,
-    esAdmin: encontrado.cargo === 'Administrador'
+    idEmpleado: emp.idEmpleado,
+    nombreCompleto: emp.nombreCompleto,
+    usuario: emp.usuario,
+    rol: emp.rol,
+    idRol: emp.idRol,
+    esAdmin: emp.idRol === 1
   };
-  guardarSesion(sesion);
+  localStorage.setItem('hotel_sesion', JSON.stringify(sesion));
   return sesion;
 }
 
-// Guarda sesion en localStorage
-function guardarSesion(sesion) {
-  localStorage.setItem('hotel_sesion', JSON.stringify(sesion));
-}
-
-// Obtiene sesion actual
 function obtenerSesion() {
-  const guardada = localStorage.getItem('hotel_sesion');
-  if (!guardada) {
-    return null;
-  }
-  return JSON.parse(guardada);
+  const s = localStorage.getItem('hotel_sesion');
+  return s ? JSON.parse(s) : null;
 }
 
-// Cierra sesion
 function cerrarSesion() {
   localStorage.removeItem('hotel_sesion');
   window.location.href = '../index.html';
 }
 
-// Verifica que haya sesion activa
 function verificarSesion() {
-  const sesion = obtenerSesion();
-  if (!sesion) {
-    window.location.href = '../index.html';
-    return null;
-  }
-  return sesion;
+  const s = obtenerSesion();
+  if (!s) { window.location.href = '../index.html'; return null; }
+  return s;
 }
 
-// Verifica acceso de admin
 function verificarAdmin() {
-  const sesion = verificarSesion();
-  if (!sesion) {
-    return null;
-  }
-  if (!sesion.esAdmin) {
-    window.location.href = 'dashboard.html';
-    return null;
-  }
-  return sesion;
+  const s = verificarSesion();
+  if (!s) return null;
+  if (!s.esAdmin) { window.location.href = 'dashboard.html'; return null; }
+  return s;
 }

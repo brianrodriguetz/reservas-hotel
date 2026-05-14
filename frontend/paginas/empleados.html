@@ -2,97 +2,88 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Hotel Diablos Rojos - Empleados</title>
+  <title>Hotel - Empleados</title>
   <link rel="stylesheet" href="../css/estilos.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/paginas.css">
 </head>
 <body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-titulo">HOTEL</div><div class="logo-subtitulo">Diablos Rojos</div></div>
+    <nav class="sidebar-menu">
+      <a href="dashboard.html" class="menu-item">Inicio</a>
+      <a href="clientes.html" class="menu-item">Clientes</a>
+      <a href="reservas.html" class="menu-item">Reservas</a>
+      <a href="habitaciones.html" class="menu-item">Habitaciones</a>
+      <a href="pagos.html" class="menu-item">Pagos</a>
+      <div id="menu-separador" class="separador"></div>
+      <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
+      <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
+    </nav>
+    <div class="sidebar-footer"><button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button></div>
+  </aside>
 
-  <div class="layout">
-
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-titulo">HOTEL</div>
-        <div class="logo-subtitulo">Diablos Rojos</div>
+  <div class="contenido-principal">
+    <header class="topbar">
+      <div class="info-usuario">
+        <span id="topbar-nombre" class="saludo"></span>
+        <span class="separador-texto">·</span>
+        <span id="topbar-rol" class="rol"></span>
       </div>
-      <nav class="sidebar-menu">
-        <a href="dashboard.html" class="menu-item">Inicio</a>
-        <a href="clientes.html" class="menu-item">Clientes</a>
-        <a href="reservas.html" class="menu-item">Reservas</a>
-        <a href="habitaciones.html" class="menu-item">Habitaciones</a>
-        <a href="pagos.html" class="menu-item">Pagos</a>
-        <div id="menu-separador" class="separador"></div>
-        <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
-        <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button>
+      <div id="topbar-avatar" class="avatar"></div>
+    </header>
+
+    <main class="contenido">
+      <div class="page-header">
+        <h1 class="titulo">Gestion de Empleados</h1>
+        <p class="subtitulo">Administrar el personal del hotel</p>
       </div>
-    </aside>
 
-    <div class="contenido-principal">
-      <header class="topbar">
-        <div class="info-usuario">
-          <span id="topbar-nombre" class="saludo"></span>
-          <span class="separador-texto">·</span>
-          <span id="topbar-rol" class="rol"></span>
-        </div>
-        <div id="topbar-avatar" class="avatar"></div>
-      </header>
+      <h3 class="seccion-titulo">Roles del sistema</h3>
+      <table class="tabla" style="margin-bottom:26px">
+        <thead>
+          <tr><th>ID Rol</th><th>Nombre del rol</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="tbody-roles"></tbody>
+      </table>
 
-      <main class="contenido">
-
-        <div class="page-header">
-          <h1 class="titulo">Gestion de Empleados</h1>
-          <p class="subtitulo">Administrar el personal del hotel</p>
-        </div>
-
-        <table class="tabla">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Documento</th>
-              <th>Nombre</th>
-              <th>Cargo</th>
-              <th>Email</th>
-              <th>Usuario</th>
-              <th>Salario</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-empleados"></tbody>
-        </table>
-
-      </main>
-    </div>
+      <h3 class="seccion-titulo">Empleados</h3>
+      <table class="tabla">
+        <thead>
+          <tr><th>ID</th><th>Documento</th><th>Nombre completo</th><th>Rol</th><th>Email</th><th>Usuario</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="tbody-emp"></tbody>
+      </table>
+    </main>
   </div>
+</div>
 
-  <script src="../js/datos.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/comunes.js"></script>
-  <script>
-    // Solo admins
-    verificarAdmin();
-    inicializarLayout();
+<script src="../js/datos.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/comunes.js"></script>
+<script>
+  verificarAdmin();
+  inicializarLayout();
 
-    const tbody = document.getElementById('tabla-empleados');
-    for (let i = 0; i < EMPLEADOS.length; i++) {
-      const e = EMPLEADOS[i];
-      const claseEstado = e.estado === 'Activo' ? 'badge badge-exito' : 'badge badge-peligro';
-      const tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td>' + e.idPersona + '</td>' +
-        '<td>' + e.numeroDocumento + '</td>' +
-        '<td>' + e.nombre + ' ' + e.apellido + '</td>' +
-        '<td><span class="badge badge-primario">' + e.cargo + '</span></td>' +
-        '<td>' + e.email + '</td>' +
-        '<td>' + e.usuario + '</td>' +
-        '<td>' + formatearMoneda(e.salario) + '</td>' +
-        '<td><span class="' + claseEstado + '">' + e.estado + '</span></td>';
-      tbody.appendChild(tr);
-    }
-  </script>
+  const tbRoles = document.getElementById('tbody-roles');
+  ROLES.forEach(function(r) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + r.idRol + '</td><td><strong>' + r.nombre + '</strong></td>' +
+      '<td><span class="badge badge-exito">' + r.estado + '</span></td>';
+    tbRoles.appendChild(tr);
+  });
 
+  const tbEmp = document.getElementById('tbody-emp');
+  EMPLEADOS.forEach(function(e) {
+    const tr = document.createElement('tr');
+    const claseEst = e.estado === 'Activo' ? 'badge-exito' : 'badge-peligro';
+    tr.innerHTML = '<td>' + e.idEmpleado + '</td><td>' + e.numeroDocumento + '</td>' +
+      '<td>' + e.nombreCompleto + '</td>' +
+      '<td><span class="badge badge-primario">' + e.rol + '</span></td>' +
+      '<td>' + e.email + '</td><td>' + e.usuario + '</td>' +
+      '<td><span class="badge ' + claseEst + '">' + e.estado + '</span></td>';
+    tbEmp.appendChild(tr);
+  });
+</script>
 </body>
 </html>

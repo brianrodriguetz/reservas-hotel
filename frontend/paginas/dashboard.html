@@ -2,135 +2,96 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Hotel Diablos Rojos - Inicio</title>
+  <title>Hotel - Inicio</title>
   <link rel="stylesheet" href="../css/estilos.css">
   <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/paginas.css">
 </head>
 <body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-titulo">HOTEL</div><div class="logo-subtitulo">Diablos Rojos</div></div>
+    <nav class="sidebar-menu">
+      <a href="dashboard.html" class="menu-item">Inicio</a>
+      <a href="clientes.html" class="menu-item">Clientes</a>
+      <a href="reservas.html" class="menu-item">Reservas</a>
+      <a href="habitaciones.html" class="menu-item">Habitaciones</a>
+      <a href="pagos.html" class="menu-item">Pagos</a>
+      <div id="menu-separador" class="separador"></div>
+      <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
+      <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
+    </nav>
+    <div class="sidebar-footer"><button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button></div>
+  </aside>
 
-  <div class="layout">
+  <div class="contenido-principal">
+    <header class="topbar">
+      <div class="info-usuario">
+        <span id="topbar-nombre" class="saludo"></span>
+        <span class="separador-texto">·</span>
+        <span id="topbar-rol" class="rol"></span>
+      </div>
+      <div id="topbar-avatar" class="avatar"></div>
+    </header>
 
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-titulo">HOTEL</div>
-        <div class="logo-subtitulo">Diablos Rojos</div>
+    <main class="contenido">
+      <div class="page-header">
+        <h1 class="titulo">Panel Principal</h1>
+        <p class="subtitulo">Resumen del sistema en tiempo real</p>
       </div>
 
-      <nav class="sidebar-menu">
-        <a href="dashboard.html" class="menu-item">Inicio</a>
-        <a href="clientes.html" class="menu-item">Clientes</a>
-        <a href="reservas.html" class="menu-item">Reservas</a>
-        <a href="habitaciones.html" class="menu-item">Habitaciones</a>
-        <a href="pagos.html" class="menu-item">Pagos</a>
-        <div id="menu-separador" class="separador"></div>
-        <a id="menu-empleados" href="empleados.html" class="menu-item">Empleados</a>
-        <a id="menu-reportes" href="reportes.html" class="menu-item">Reportes</a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button class="menu-item logout" onclick="cerrarSesion()">Cerrar Sesion</button>
+      <div class="grid-4">
+        <div class="indicador">
+          <span class="ind-titulo">Clientes registrados</span>
+          <span id="ind-clientes" class="ind-valor color-primario">0</span>
+          <div class="ind-barra fondo-primario"></div>
+        </div>
+        <div class="indicador">
+          <span class="ind-titulo">Reservas activas</span>
+          <span id="ind-reservas" class="ind-valor color-acento">0</span>
+          <div class="ind-barra fondo-acento"></div>
+        </div>
+        <div class="indicador">
+          <span class="ind-titulo">Habitaciones libres</span>
+          <span id="ind-habitaciones" class="ind-valor color-exito">0</span>
+          <div class="ind-barra fondo-exito"></div>
+        </div>
+        <div class="indicador">
+          <span class="ind-titulo">Ingresos del mes</span>
+          <span id="ind-ingresos" class="ind-valor color-morado">$ 0</span>
+          <div class="ind-barra fondo-morado"></div>
+        </div>
       </div>
-    </aside>
 
-    <div class="contenido-principal">
-
-      <header class="topbar">
-        <div class="info-usuario">
-          <span id="topbar-nombre" class="saludo"></span>
-          <span class="separador-texto">·</span>
-          <span id="topbar-rol" class="rol"></span>
-        </div>
-        <div id="topbar-avatar" class="avatar"></div>
-      </header>
-
-      <main class="contenido">
-
-        <div class="page-header">
-          <h1 class="titulo">Panel Principal</h1>
-          <p class="subtitulo">Resumen del sistema en tiempo real</p>
-        </div>
-
-        <div class="grid-4">
-
-          <div class="indicador">
-            <span class="ind-titulo">Clientes registrados</span>
-            <span id="ind-clientes" class="ind-valor color-primario">0</span>
-            <div class="ind-barra fondo-primario"></div>
-          </div>
-
-          <div class="indicador">
-            <span class="ind-titulo">Reservas activas</span>
-            <span id="ind-reservas" class="ind-valor color-acento">0</span>
-            <div class="ind-barra fondo-acento"></div>
-          </div>
-
-          <div class="indicador">
-            <span class="ind-titulo">Habitaciones libres</span>
-            <span id="ind-habitaciones" class="ind-valor color-exito">0</span>
-            <div class="ind-barra fondo-exito"></div>
-          </div>
-
-          <div class="indicador">
-            <span class="ind-titulo">Ingresos del mes</span>
-            <span id="ind-ingresos" class="ind-valor color-morado">$ 0</span>
-            <div class="ind-barra fondo-morado"></div>
-          </div>
-
-        </div>
-
-        <div class="tarjeta mensaje-bienvenida">
-          <h3 class="tarjeta-titulo">Bienvenido al sistema</h3>
-          <p>
-            Use el menu lateral para gestionar clientes, reservas, habitaciones y pagos.
-            Si es administrador, tambien puede acceder a la gestion de empleados y a los
-            reportes consolidados del hotel.
-          </p>
-          <p class="pie-mensaje">
-            Hotel Diablos Rojos · Universidad El Bosque · Bases de Datos I
-          </p>
-        </div>
-
-      </main>
-    </div>
+      <div class="tarjeta" style="margin-top:22px">
+        <h3 class="tarjeta-titulo">Bienvenido al sistema</h3>
+        <p>Use el menu lateral para gestionar clientes, reservas, habitaciones y pagos.</p>
+        <p style="color:var(--color-texto-suave);margin-top:10px">Hotel Diablos Rojos · Universidad El Bosque · Bases de Datos I · 2026-1</p>
+      </div>
+    </main>
   </div>
+</div>
 
-  <script src="../js/datos.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/comunes.js"></script>
-  <script>
-    inicializarLayout();
+<script src="../js/datos.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/comunes.js"></script>
+<script>
+  inicializarLayout();
 
-    // Calcular indicadores
-    document.getElementById('ind-clientes').textContent = CLIENTES.length;
+  document.getElementById('ind-clientes').textContent = CLIENTES.length;
 
-    let activas = 0;
-    for (let i = 0; i < RESERVAS.length; i++) {
-      const e = RESERVAS[i].estado;
-      if (e !== 'Cancelada' && e !== 'No Show' && e !== 'Finalizada') {
-        activas++;
-      }
-    }
-    document.getElementById('ind-reservas').textContent = activas;
+  const activas = RESERVAS.filter(function(r) {
+    return r.estado !== 'Cancelada' && r.estado !== 'Finalizada';
+  }).length;
+  document.getElementById('ind-reservas').textContent = activas;
 
-    let disponibles = 0;
-    for (let i = 0; i < HABITACIONES.length; i++) {
-      if (HABITACIONES[i].estado === 'Disponible') {
-        disponibles++;
-      }
-    }
-    document.getElementById('ind-habitaciones').textContent = disponibles;
+  const disponibles = HABITACIONES.filter(function(h) { return h.estado === 'Disponible'; }).length;
+  document.getElementById('ind-habitaciones').textContent = disponibles;
 
-    const ahora = new Date();
-    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
-    let ingresos = 0;
-    for (let i = 0; i < PAGOS.length; i++) {
-      if (PAGOS[i].estado === 'Aprobado' && new Date(PAGOS[i].fechaPago) >= inicioMes) {
-        ingresos += PAGOS[i].monto;
-      }
-    }
-    document.getElementById('ind-ingresos').textContent = formatearMoneda(ingresos);
-  </script>
-
+  const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  const ingresos = PAGOS.filter(function(p) {
+    return p.estado === 'Aprobado' && new Date(p.fechaPago) >= inicioMes;
+  }).reduce(function(s, p) { return s + p.monto; }, 0);
+  document.getElementById('ind-ingresos').textContent = formatearMoneda(ingresos);
+</script>
 </body>
 </html>
