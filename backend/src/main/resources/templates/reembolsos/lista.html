@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reembolsos')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('reembolsos')}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0"><i class="bi bi-cash-coin"></i> Solicitudes de reembolso</h2>
+        <a th:href="@{/reembolsos/nueva}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nueva solicitud
+        </a>
+    </div>
+
+    <div class="alert alert-info small">
+        <i class="bi bi-info-circle"></i>
+        Workflow: <strong>Pendiente</strong> →
+        (Aprobar) <strong>Aprobado</strong> →
+        (Procesar) <strong>Procesado</strong>.
+        Una solicitud Pendiente o Aprobada también puede ser <strong>Rechazada</strong>.
+        Plazo máximo de procesamiento: 15 días hábiles desde la aprobación.
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/reembolsos}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label small mb-1">Filtrar por estado</label>
+                    <select name="estado" class="form-select">
+                        <option value="">— Todos los estados —</option>
+                        <option th:each="e : ${estados}"
+                                th:value="${e.name()}"
+                                th:text="${e.name()}"
+                                th:selected="${filtroEstado != null and filtroEstado == e.name()}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                    <a th:href="@{/reembolsos}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cancelación</th>
+                        <th>Estado</th>
+                        <th>Medio</th>
+                        <th class="text-end">Monto (COP)</th>
+                        <th>Fecha solicitud</th>
+                        <th>Procesado el</th>
+                        <th>Empleado</th>
+                        <th class="text-end" style="min-width: 280px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${solicitudes.isEmpty()}">
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i> No hay solicitudes que coincidan.
+                        </td>
+                    </tr>
+                    <tr th:each="s : ${solicitudes}">
+                        <td><strong th:text="'#' + ${s.idSolicitud}">#1</strong></td>
+                        <td>
+                            <small class="text-muted">Cancelación
+                                <code th:text="'#' + ${s.idCancelacion}">#0</code>
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge badge-estado"
+                                  th:classappend="'estado-' + ${#strings.toLowerCase(s.estado.name())}"
+                                  th:text="${s.estado}">Pendiente</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border"
+                                  th:text="${#strings.replace(s.medio.name(), '_', ' ')}">Efectivo</span>
+                        </td>
+                        <td class="text-end">
+                            <strong th:text="${#numbers.formatDecimal(s.monto, 0, 'COMMA', 0, 'POINT')}">0</strong>
+                        </td>
+                        <td>
+                            <small th:text="${#temporals.format(s.fecha, 'dd/MM/yyyy HH:mm')}">—</small>
+                        </td>
+                        <td>
+                            <small th:if="${s.fechaProcesamiento != null}"
+                                   th:text="${#temporals.format(s.fechaProcesamiento, 'dd/MM/yyyy HH:mm')}">—</small>
+                            <span th:if="${s.fechaProcesamiento == null}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <small th:if="${s.idEmpleado != null}"
+                                   th:text="'Emp. #' + ${s.idEmpleado}">—</small>
+                            <span th:if="${s.idEmpleado == null}"
+                                  class="badge bg-light text-dark border">Sin asignar</span>
+                        </td>
+                        <td class="text-end">
+                            <!-- Aprobar: solo si Pendiente -->
+                            <form th:if="${s.estado.name() == 'Pendiente'}"
+                                  th:action="@{/reembolsos/{id}/aprobar(id=${s.idSolicitud})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Aprobar esta solicitud?');">
+                                <button type="submit" class="btn btn-sm btn-success" title="Aprobar">
+                                    <i class="bi bi-check-lg"></i> Aprobar
+                                </button>
+                            </form>
+
+                            <!-- Procesar: solo si Aprobado -->
+                            <form th:if="${s.estado.name() == 'Aprobado'}"
+                                  th:action="@{/reembolsos/{id}/procesar(id=${s.idSolicitud})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Procesar el reembolso? Esto marca la solicitud como completada.');">
+                                <button type="submit" class="btn btn-sm btn-primary" title="Procesar">
+                                    <i class="bi bi-credit-card"></i> Procesar
+                                </button>
+                            </form>
+
+                            <!-- Rechazar: si Pendiente o Aprobado -->
+                            <form th:if="${s.estado.name() == 'Pendiente' or s.estado.name() == 'Aprobado'}"
+                                  th:action="@{/reembolsos/{id}/rechazar(id=${s.idSolicitud})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Rechazar esta solicitud?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Rechazar">
+                                    <i class="bi bi-x-lg"></i> Rechazar
+                                </button>
+                            </form>
+
+                            <!-- Eliminar: siempre disponible -->
+                            <form th:action="@{/reembolsos/{id}/eliminar(id=${s.idSolicitud})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar esta solicitud? Esta acción no se puede deshacer.');">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-muted mt-3 small">
+        Mostrando <strong th:text="${solicitudes.size()}">0</strong>
+        solicitud(es).
+    </p>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

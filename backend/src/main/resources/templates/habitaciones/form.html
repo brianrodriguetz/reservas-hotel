@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'crear' ? 'Nueva habitación' : 'Editar habitación'})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('habitaciones')}"></nav>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/habitaciones}">Habitaciones</a></li>
+            <li class="breadcrumb-item active"
+                th:text="${modo == 'crear' ? 'Nueva' : 'Editar'}">Nueva</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi"
+                   th:classappend="${modo == 'crear'} ? 'bi-plus-circle' : 'bi-pencil-square'"></i>
+                <span th:text="${modo == 'crear' ? 'Nueva habitación' : 'Editar habitación'}">Form</span>
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="${modo == 'crear'}
+                              ? @{/habitaciones}
+                              : @{/habitaciones/{id}/actualizar(id=${habitacion.idHabitacion})}"
+                  th:object="${habitacion}" method="post">
+
+                <input type="hidden" th:field="*{idHabitacion}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="codigo" class="form-label">Código *</label>
+                        <input type="text" id="codigo" th:field="*{codigo}"
+                               class="form-control" maxlength="10" required
+                               placeholder="Ej: A101">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('codigo')}"
+                             th:errors="*{codigo}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="piso" class="form-label">Piso *</label>
+                        <input type="number" id="piso" th:field="*{piso}"
+                               class="form-control" min="1" max="127" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('piso')}"
+                             th:errors="*{piso}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="idTipo" class="form-label">Tipo de habitación *</label>
+                        <select id="idTipo" th:field="*{idTipo}" class="form-select" required>
+                            <option value="">— Seleccionar tipo —</option>
+                            <option th:each="t : ${tipos}"
+                                    th:value="${t.idTipo}"
+                                    th:text="${t.nombre} + ' — capacidad ' + ${t.capacidadMax} + ' — ' + ${t.precioBaseNoche} + ' COP/noche'"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('idTipo')}"
+                             th:errors="*{idTipo}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option value="">— Seleccionar estado —</option>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${#strings.replace(e.name(), '_', ' ')}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/habitaciones}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        <span th:text="${modo == 'crear' ? 'Crear habitación' : 'Guardar cambios'}">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

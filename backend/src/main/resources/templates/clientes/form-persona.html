@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'crear' ? 'Nueva persona' : 'Editar persona'})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('clientes')}"></nav>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/clientes(tab='personas')}">Clientes</a></li>
+            <li class="breadcrumb-item active"
+                th:text="${modo == 'crear' ? 'Nueva persona' : 'Editar persona'}">Form</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi"
+                   th:classappend="${modo == 'crear'} ? 'bi-person-plus' : 'bi-person-gear'"></i>
+                <span th:text="${modo == 'crear' ? 'Nueva persona' : 'Editar persona'}">Form</span>
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="${modo == 'crear'}
+                              ? @{/clientes/personas}
+                              : @{/clientes/personas/{id}/actualizar(id=${persona.idCliente})}"
+                  th:object="${persona}" method="post">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="tipoDocumento" class="form-label">Tipo de documento *</label>
+                        <select id="tipoDocumento" th:field="*{tipoDocumento}" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            <option th:each="t : ${tiposDocumento}"
+                                    th:value="${t.name()}"
+                                    th:text="${t.name() == 'CC' ? 'Cédula de Ciudadanía' :
+                                              (t.name() == 'CE' ? 'Cédula de Extranjería' : 'Pasaporte')}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('tipoDocumento')}"
+                             th:errors="*{tipoDocumento}"></div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label for="numeroDocumento" class="form-label">Número de documento *</label>
+                        <input type="text" id="numeroDocumento" th:field="*{numeroDocumento}"
+                               class="form-control" maxlength="20" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('numeroDocumento')}"
+                             th:errors="*{numeroDocumento}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">Nombre(s) *</label>
+                        <input type="text" id="nombre" th:field="*{nombre}"
+                               class="form-control" maxlength="100" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}"
+                             th:errors="*{nombre}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label">Apellido(s) *</label>
+                        <input type="text" id="apellido" th:field="*{apellido}"
+                               class="form-control" maxlength="100" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('apellido')}"
+                             th:errors="*{apellido}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaNacimiento" class="form-label">Fecha de nacimiento *</label>
+                        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}"
+                               class="form-control" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('fechaNacimiento')}"
+                             th:errors="*{fechaNacimiento}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="nacionalidad" class="form-label">Nacionalidad *</label>
+                        <input type="text" id="nacionalidad" th:field="*{nacionalidad}"
+                               class="form-control" maxlength="50" required
+                               placeholder="Ej: Colombiana">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('nacionalidad')}"
+                             th:errors="*{nacionalidad}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${e.name()}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/clientes(tab='personas')}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        <span th:text="${modo == 'crear' ? 'Crear persona' : 'Guardar cambios'}">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

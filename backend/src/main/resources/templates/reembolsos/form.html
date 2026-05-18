@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nueva solicitud de reembolso')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('reembolsos')}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/reembolsos}">Reembolsos</a></li>
+            <li class="breadcrumb-item active">Nueva solicitud</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0"><i class="bi bi-cash-coin"></i> Nueva solicitud de reembolso</h4>
+        </div>
+        <div class="card-body">
+
+            <div class="alert alert-warning small">
+                <i class="bi bi-info-circle"></i>
+                La solicitud se vincula a una <strong>cancelación existente</strong>.
+                Cada cancelación puede tener máximo una solicitud de reembolso.
+            </div>
+
+            <form th:action="@{/reembolsos}" th:object="${solicitud}" method="post">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="idCancelacion" class="form-label">ID de la cancelación *</label>
+                        <input type="number" id="idCancelacion" th:field="*{idCancelacion}"
+                               class="form-control" min="1" required
+                               placeholder="Ej: 5">
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            El ID del evento de cancelación (visible en eventos de la reserva).
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="monto" class="form-label">Monto (COP) *</label>
+                        <input type="number" id="monto" th:field="*{monto}"
+                               class="form-control" step="1" min="1" required
+                               placeholder="Ej: 135000">
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            Calculado: (suma pagos aprobados) − (precio total × penalización).
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="medio" class="form-label">Medio de pago *</label>
+                        <select id="medio" th:field="*{medio}" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            <option th:each="m : ${medios}"
+                                    th:value="${m.name()}"
+                                    th:text="${#strings.replace(m.name(), '_', ' ')}"></option>
+                        </select>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            Por defecto se usa el medio del pago aprobado de mayor monto.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${e.name()}"></option>
+                        </select>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            Lo normal al crear es <code>Pendiente</code>.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="motivo" class="form-label">Motivo *</label>
+                        <textarea id="motivo" th:field="*{motivo}"
+                                  class="form-control" rows="3" required
+                                  placeholder="Ej: Cancelación con más de 72h de anticipación, reembolso total."></textarea>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/reembolsos}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Crear solicitud
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nueva reserva')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('reservas')}"></nav>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/reservas}">Reservas</a></li>
+            <li class="breadcrumb-item active">Nueva reserva</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi bi-calendar-plus"></i> Nueva reserva
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="@{/reservas}" th:object="${reserva}" method="post">
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="idCliente" class="form-label">Cliente *</label>
+                        <select id="idCliente" th:field="*{idCliente}" class="form-select" required>
+                            <option value="">— Seleccionar cliente —</option>
+                            <optgroup label="Personas">
+                                <option th:each="p : ${personas}"
+                                        th:value="${p.idCliente}"
+                                        th:text="${p.numeroDocumento} + ' — ' + ${p.nombreCompleto}"></option>
+                            </optgroup>
+                            <optgroup label="Empresas">
+                                <option th:each="e : ${empresas}"
+                                        th:value="${e.idCliente}"
+                                        th:text="${e.nit} + ' — ' + ${e.razonSocial}"></option>
+                            </optgroup>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('idCliente')}"
+                             th:errors="*{idCliente}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaCheckInPrevista" class="form-label">Check-in previsto *</label>
+                        <input type="datetime-local" id="fechaCheckInPrevista"
+                               th:field="*{fechaCheckInPrevista}"
+                               class="form-control" required>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i> Hora estándar: 14:00
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('fechaCheckInPrevista')}"
+                             th:errors="*{fechaCheckInPrevista}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaCheckOutPrevista" class="form-label">Check-out previsto *</label>
+                        <input type="datetime-local" id="fechaCheckOutPrevista"
+                               th:field="*{fechaCheckOutPrevista}"
+                               class="form-control" required>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i> Hora estándar: 11:00. Debe ser posterior al check-in.
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('fechaCheckOutPrevista')}"
+                             th:errors="*{fechaCheckOutPrevista}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="canal" class="form-label">Canal *</label>
+                        <select id="canal" th:field="*{canal}" class="form-select" required>
+                            <option th:each="c : ${canales}"
+                                    th:value="${c.name()}"
+                                    th:text="${c.name()}"></option>
+                        </select>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i> Presencial = walk-in (pago 100% al ingreso).
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('canal')}"
+                             th:errors="*{canal}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado inicial *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${#strings.replace(e.name(), '_', ' ')}"></option>
+                        </select>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i> Lo normal es <code>Pendiente</code>.
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="precioTotal" class="form-label">Precio total (COP) *</label>
+                        <input type="number" id="precioTotal" th:field="*{precioTotal}"
+                               class="form-control" step="1" min="0" required
+                               placeholder="Ej: 450000">
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            Según los supuestos: (precio base por noche) × (número de noches) × (cantidad de habitaciones).
+                            En esta versión se ingresa manualmente.
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('precioTotal')}"
+                             th:errors="*{precioTotal}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/reservas}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Crear reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
