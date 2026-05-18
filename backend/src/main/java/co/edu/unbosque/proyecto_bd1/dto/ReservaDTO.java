@@ -1,58 +1,51 @@
-package co.edu.unbosque.proyecto_bd1.model;
+package co.edu.unbosque.proyecto_bd1.dto;
 
 import co.edu.unbosque.proyecto_bd1.enums.CanalReserva;
 import co.edu.unbosque.proyecto_bd1.enums.EstadoReserva;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Entity
-@Table(name = "reserva")
-public class Reserva {
+public class ReservaDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_Reserva")
     private Integer idReserva;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "canal", nullable = false, length = 15)
+    @NotNull(message = "El canal es obligatorio")
     private CanalReserva canal;
 
-    @Column(name = "fecha_Creacion", nullable = false)
+    @NotNull(message = "La fecha de creacion es obligatoria")
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "fechaCheckInPrevista", nullable = false)
+    @NotNull(message = "La fecha de check-in prevista es obligatoria")
     private LocalDateTime fechaCheckInPrevista;
 
-    @Column(name = "fechaCheckOutPrevista", nullable = false)
+    @NotNull(message = "La fecha de check-out prevista es obligatoria")
     private LocalDateTime fechaCheckOutPrevista;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false, length = 15)
+    @NotNull(message = "El estado es obligatorio")
     private EstadoReserva estado;
 
-    @Column(name = "precio_Total", nullable = false, precision = 15, scale = 2)
+    @NotNull(message = "El precio total es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = true, message = "El precio total no puede ser negativo")
     private BigDecimal precioTotal;
 
-    @Column(name = "id_Cliente", nullable = false)
+    @NotNull(message = "El id del cliente es obligatorio")
+    @Positive(message = "El id del cliente debe ser positivo")
     private Integer idCliente;
 
+    // ===== Atributo derivado (calculado en mapper) =====
+    private Integer numeroNoches;
+
     // ===== Constructores =====
-    public Reserva() {
+    public ReservaDTO() {
     }
 
-    public Reserva(CanalReserva canal, LocalDateTime fechaCreacion,
-                   LocalDateTime fechaCheckInPrevista, LocalDateTime fechaCheckOutPrevista,
-                   EstadoReserva estado, BigDecimal precioTotal, Integer idCliente) {
+    public ReservaDTO(Integer idReserva, CanalReserva canal, LocalDateTime fechaCreacion,
+                      LocalDateTime fechaCheckInPrevista, LocalDateTime fechaCheckOutPrevista,
+                      EstadoReserva estado, BigDecimal precioTotal, Integer idCliente) {
+        this.idReserva = idReserva;
         this.canal = canal;
         this.fechaCreacion = fechaCreacion;
         this.fechaCheckInPrevista = fechaCheckInPrevista;
@@ -127,31 +120,11 @@ public class Reserva {
         this.idCliente = idCliente;
     }
 
-    // ===== Equals / HashCode =====
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Reserva otra = (Reserva) o;
-        return Objects.equals(idReserva, otra.idReserva);
+    public Integer getNumeroNoches() {
+        return numeroNoches;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idReserva);
-    }
-
-    @Override
-    public String toString() {
-        return "Reserva{idReserva=" + idReserva + ", canal=" + canal
-                + ", fechaCreacion=" + fechaCreacion
-                + ", fechaCheckInPrevista=" + fechaCheckInPrevista
-                + ", fechaCheckOutPrevista=" + fechaCheckOutPrevista
-                + ", estado=" + estado + ", precioTotal=" + precioTotal
-                + ", idCliente=" + idCliente + "}";
+    public void setNumeroNoches(Integer numeroNoches) {
+        this.numeroNoches = numeroNoches;
     }
 }
