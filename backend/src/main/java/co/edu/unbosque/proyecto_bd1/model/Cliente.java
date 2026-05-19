@@ -28,7 +28,7 @@ public class Cliente {
     @Column(name = "estado", nullable = false, length = 10)
     private EstadoActivo estado;
 
-    // ===== Constructores =====
+  
     public Cliente() {
     }
 
@@ -37,7 +37,7 @@ public class Cliente {
         this.estado = estado;
     }
 
-    // ===== Getters y Setters =====
+ 
     public Integer getIdCliente() {
         return idCliente;
     }
@@ -62,7 +62,7 @@ public class Cliente {
         this.estado = estado;
     }
 
-    // ===== Equals / HashCode =====
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

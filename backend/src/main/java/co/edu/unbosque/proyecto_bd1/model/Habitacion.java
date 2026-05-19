@@ -30,11 +30,11 @@ public class Habitacion {
     @Column(name = "estado", nullable = false, length = 20)
     private EstadoHabitacion estado;
 
-    // FK a TipoHabitacion (solo el id, decision arquitectonica del proyecto)
+  
     @Column(name = "id_Tipo", nullable = false)
     private Integer idTipo;
 
-    // ===== Constructores =====
+    
     public Habitacion() {
     }
 
@@ -45,7 +45,7 @@ public class Habitacion {
         this.idTipo = idTipo;
     }
 
-    // ===== Getters y Setters =====
+  
     public Integer getIdHabitacion() {
         return idHabitacion;
     }
@@ -86,7 +86,7 @@ public class Habitacion {
         this.idTipo = idTipo;
     }
 
-    // ===== Equals / HashCode =====
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) {

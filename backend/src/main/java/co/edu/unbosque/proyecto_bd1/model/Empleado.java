@@ -36,20 +36,19 @@ public class Empleado {
     @Column(name = "estado", nullable = false, length = 10)
     private EstadoActivo estado;
 
-    // FK a Rol (solo el id, decision arquitectonica del proyecto)
+    
     @Column(name = "id_Rol", nullable = false)
     private Integer idRol;
 
-    // FK recursiva a Empleado supervisor (NULL para Administrador)
+    
     @Column(name = "id_Supervisor")
     private Integer idSupervisor;
 
-    // ===== Constructores =====
+    
     public Empleado() {
     }
 
-    public Empleado(String numeroDocumento, String usuario, String nombre, String apellido,
-                    EstadoActivo estado, Integer idRol, Integer idSupervisor) {
+    public Empleado(String numeroDocumento, String usuario, String nombre, String apellido, EstadoActivo estado, Integer idRol, Integer idSupervisor) {
         this.numeroDocumento = numeroDocumento;
         this.usuario = usuario;
         this.nombre = nombre;
@@ -59,7 +58,7 @@ public class Empleado {
         this.idSupervisor = idSupervisor;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdEmpleado() {
         return idEmpleado;
     }

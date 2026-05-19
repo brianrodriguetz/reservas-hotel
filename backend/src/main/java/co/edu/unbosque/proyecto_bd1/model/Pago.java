@@ -40,7 +40,7 @@ private LocalDateTime fechaPago;
     @Column(name = "id_Reserva", nullable = false)
     private Integer idReserva;
 
-    // ===== Constructores =====
+    
     public Pago() {
     }
 
@@ -102,7 +102,7 @@ private LocalDateTime fechaPago;
         this.idReserva = idReserva;
     }
 
-    // ===== Equals / HashCode =====
+  
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -30,7 +30,7 @@ public class AsignacionHuespedService {
         this.reservaHabitacionRepository = reservaHabitacionRepository;
     }
 
-    // ====== READ ======
+    // listar
 
     @Transactional(readOnly = true)
     public List<AsignacionHuespedDTO> listarTodos() {
@@ -81,14 +81,14 @@ public class AsignacionHuespedService {
         return asignacionHuespedMapper.aDTO(opt.get());
     }
 
-    // ====== CREATE ======
+    // crear
 
     @Transactional
     public void crear(AsignacionHuespedDTO dto) {
         validarHuespedExiste(dto.getIdHuesped());
         validarReservaHabitacionExiste(dto.getIdReserva(), dto.getIdHabitacion());
 
-        // Validar PK compuesta no duplicada
+        // validar PK compuesta no duplicada
         Optional<AsignacionHuesped> existente = asignacionHuespedRepository.buscarPorIds(
             dto.getIdHuesped(), dto.getIdReserva(), dto.getIdHabitacion());
         if (existente.isPresent()) {
@@ -97,7 +97,7 @@ public class AsignacionHuespedService {
                 + " ya esta asignado a esa reserva-habitacion");
         }
 
-        // Regla: solo un titular por reserva-habitacion
+        // solo in titular por reserva
         if (Boolean.TRUE.equals(dto.getEsTitular())) {
             asignacionHuespedRepository.desmarcarTitulares(
                 dto.getIdReserva(), dto.getIdHabitacion());
@@ -111,7 +111,7 @@ public class AsignacionHuespedService {
         );
     }
 
-    // ====== UPDATE ======
+    // crear
 
     @Transactional
     public void actualizarTitular(Integer idHuesped, Integer idReserva,
@@ -129,7 +129,7 @@ public class AsignacionHuespedService {
         }
     }
 
-    // ====== DELETE ======
+    // borrar
 
     @Transactional
     public void eliminar(Integer idHuesped, Integer idReserva, Integer idHabitacion) {
@@ -141,7 +141,7 @@ public class AsignacionHuespedService {
         }
     }
 
-    // ===== Helpers privados =====
+   
 
     private void validarHuespedExiste(Integer idHuesped) {
         if (huespedRepository.buscarPorId(idHuesped).isEmpty()) {

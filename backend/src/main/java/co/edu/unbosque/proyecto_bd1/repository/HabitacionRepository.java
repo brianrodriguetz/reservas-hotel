@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface HabitacionRepository extends JpaRepository<Habitacion, Integer> {
 
-    // ====== READ ======
+    // leer
 
     @Query(value = "SELECT * FROM habitacion", nativeQuery = true)
     List<Habitacion> listarTodos();
@@ -30,11 +30,11 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Integer>
     @Query(value = "SELECT * FROM habitacion WHERE piso = :piso", nativeQuery = true)
     List<Habitacion> buscarPorPiso(@Param("piso") Byte piso);
 
-    // Habitaciones disponibles (regla de negocio importante para reservas)
+    // solo habitaciones disponibles
     @Query(value = "SELECT * FROM habitacion WHERE estado = 'Disponible'", nativeQuery = true)
     List<Habitacion> listarDisponibles();
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -46,7 +46,7 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Integer>
                   @Param("estado") String estado,
                   @Param("idTipo") Integer idTipo);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -63,13 +63,13 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Integer>
                    @Param("estado") String estado,
                    @Param("idTipo") Integer idTipo);
 
-    // Cambio de estado solo (util para transiciones)
+    // cambiar estado 
     @Modifying
     @Query(value = "UPDATE habitacion SET estado = :estado WHERE id_Habitacion = :id",
            nativeQuery = true)
     int actualizarEstado(@Param("id") Integer id, @Param("estado") String estado);
 
-    // ====== DELETE ======
+    // borrar
 
     @Modifying
     @Query(value = "DELETE FROM habitacion WHERE id_Habitacion = :id", nativeQuery = true)

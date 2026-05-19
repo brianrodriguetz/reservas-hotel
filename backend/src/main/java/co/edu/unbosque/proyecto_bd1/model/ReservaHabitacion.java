@@ -23,7 +23,7 @@ public class ReservaHabitacion {
     @Column(name = "numero_huespedes", nullable = false)
     private Byte numeroHuespedes;
 
-    // ===== Constructores =====
+   
     public ReservaHabitacion() {
     }
 
@@ -33,7 +33,9 @@ public class ReservaHabitacion {
         this.numeroHuespedes = numeroHuespedes;
     }
 
-    // ===== Getters y Setters =====
+    
+
+    
     public Integer getIdReserva() {
         return idReserva;
     }

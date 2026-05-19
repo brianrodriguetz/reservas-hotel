@@ -17,18 +17,18 @@ public class ClienteMapper {
             return null;
         }
         PersonaDTO dto = new PersonaDTO();
-        // Datos de Cliente
+        // genreales deCliente
         dto.setIdCliente(cliente.getIdCliente());
         dto.setFechaRegistro(cliente.getFechaRegistro());
         dto.setEstado(cliente.getEstado());
-        // Datos de Persona
+        // persona
         dto.setTipoDocumento(persona.getTipoDocumento());
         dto.setNumeroDocumento(persona.getNumeroDocumento());
         dto.setNombre(persona.getNombre());
         dto.setApellido(persona.getApellido());
         dto.setFechaNacimiento(persona.getFechaNacimiento());
         dto.setNacionalidad(persona.getNacionalidad());
-        // Atributos derivados
+        // cmpuestos o derivados
         dto.setNombreCompleto(calcularNombreCompleto(persona.getNombre(), persona.getApellido()));
         dto.setEdad(calcularEdad(persona.getFechaNacimiento()));
         return dto;
@@ -39,11 +39,11 @@ public class ClienteMapper {
             return null;
         }
         EmpresaDTO dto = new EmpresaDTO();
-        // Datos de Cliente
+        // cleinte
         dto.setIdCliente(cliente.getIdCliente());
         dto.setFechaRegistro(cliente.getFechaRegistro());
         dto.setEstado(cliente.getEstado());
-        // Datos de Empresa
+        // empresa
         dto.setNit(empresa.getNit());
         dto.setRazonSocial(empresa.getRazonSocial());
         dto.setRepresentanteLegal(empresa.getRepresentanteLegal());
@@ -51,7 +51,7 @@ public class ClienteMapper {
         return dto;
     }
 
-    // ===== Helpers privados =====
+    
 
     private String calcularNombreCompleto(String nombre, String apellido) {
         if (nombre == null && apellido == null) {

@@ -20,7 +20,7 @@ public class AsignacionHuespedDTO {
     @NotNull(message = "Indicar si es titular es obligatorio")
     private Boolean esTitular;
 
-    // ===== Constructores =====
+    
     public AsignacionHuespedDTO() {
     }
 

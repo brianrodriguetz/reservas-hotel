@@ -26,7 +26,7 @@ public class Empresa {
     @Column(name = "sector_Economico", nullable = false, length = 100)
     private String sectorEconomico;
 
-    // ===== Constructores =====
+    
     public Empresa() {
     }
 

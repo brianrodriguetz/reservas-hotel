@@ -30,23 +30,21 @@ public class Contacto {
     @Column(name = "es_Principal", nullable = false)
     private Boolean esPrincipal;
 
-    // FK a Cliente (solo el id)
     @Column(name = "id_Cliente", nullable = false)
     private Integer idCliente;
 
-    // ===== Constructores =====
+   
     public Contacto() {
     }
 
-    public Contacto(TipoContacto tipoContacto, String valor, Boolean esPrincipal,
-                    Integer idCliente) {
+    public Contacto(TipoContacto tipoContacto, String valor, Boolean esPrincipal, Integer idCliente) {
         this.tipoContacto = tipoContacto;
         this.valor = valor;
         this.esPrincipal = esPrincipal;
         this.idCliente = idCliente;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdContacto() {
         return idContacto;
     }
@@ -87,7 +85,7 @@ public class Contacto {
         this.idCliente = idCliente;
     }
 
-    // ===== Equals / HashCode =====
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

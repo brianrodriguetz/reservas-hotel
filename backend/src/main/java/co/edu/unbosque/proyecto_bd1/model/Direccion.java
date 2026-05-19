@@ -48,13 +48,11 @@ public class Direccion {
     @Column(name = "id_Cliente", nullable = false)
     private Integer idCliente;
 
-    // ===== Constructores =====
+   
     public Direccion() {
     }
 
-    public Direccion(TipoDireccion tipoDireccion, String calle, String numero,
-                     String ciudad, String departamento, String codigoPostal,
-                     String pais, Boolean esPrincipal, Integer idCliente) {
+    public Direccion(TipoDireccion tipoDireccion, String calle, String numero,String ciudad, String departamento, String codigoPostal, String pais, Boolean esPrincipal, Integer idCliente) {
         this.tipoDireccion = tipoDireccion;
         this.calle = calle;
         this.numero = numero;

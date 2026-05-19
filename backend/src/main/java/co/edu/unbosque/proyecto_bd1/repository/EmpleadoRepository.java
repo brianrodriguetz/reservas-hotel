@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM empleado", nativeQuery = true)
     List<Empleado> listarTodos();
@@ -30,11 +30,11 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
     @Query(value = "SELECT * FROM empleado WHERE id_Rol = :idRol", nativeQuery = true)
     List<Empleado> buscarPorRol(@Param("idRol") Integer idRol);
 
-    // Empleados supervisados por uno dado (utilidad para la recursiva)
+    //buscar subordinados de un supervisor en especifico
     @Query(value = "SELECT * FROM empleado WHERE id_Supervisor = :idSupervisor", nativeQuery = true)
     List<Empleado> buscarSubordinados(@Param("idSupervisor") Integer idSupervisor);
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -50,7 +50,7 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
                   @Param("idRol") Integer idRol,
                   @Param("idSupervisor") Integer idSupervisor);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -73,7 +73,7 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
                    @Param("idRol") Integer idRol,
                    @Param("idSupervisor") Integer idSupervisor);
 
-    // ====== DELETE ======
+    // borar
 
     @Modifying
     @Query(value = "DELETE FROM empleado WHERE id_Empleado = :id", nativeQuery = true)

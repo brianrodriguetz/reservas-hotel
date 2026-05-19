@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface RolRepository extends JpaRepository<Rol, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM rol", nativeQuery = true)
     List<Rol> listarTodos();
@@ -21,7 +21,7 @@ public interface RolRepository extends JpaRepository<Rol, Integer> {
     @Query(value = "SELECT * FROM rol WHERE estado = :estado", nativeQuery = true)
     List<Rol> buscarPorEstado(@Param("estado") String estado);
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = "INSERT INTO rol (nombre, estado) VALUES (:nombre, :estado)",
@@ -29,7 +29,7 @@ public interface RolRepository extends JpaRepository<Rol, Integer> {
     void insertar(@Param("nombre") String nombre,
                   @Param("estado") String estado);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = "UPDATE rol SET nombre = :nombre, estado = :estado WHERE id_Rol = :id",
@@ -38,7 +38,7 @@ public interface RolRepository extends JpaRepository<Rol, Integer> {
                    @Param("nombre") String nombre,
                    @Param("estado") String estado);
 
-    // ====== DELETE ======
+    // borrar
 
     @Modifying
     @Query(value = "DELETE FROM rol WHERE id_Rol = :id", nativeQuery = true)

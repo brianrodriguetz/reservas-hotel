@@ -11,15 +11,14 @@ import java.time.LocalDateTime;
 
 public class PersonaDTO {
 
-    // ===== Datos del Cliente padre =====
-    // idCliente y fechaRegistro: la BD los genera (al crear, se ignoran)
+    // datos hredados de Cliente
     private Integer idCliente;
     private LocalDateTime fechaRegistro;
 
     @NotNull(message = "El estado es obligatorio")
     private EstadoActivo estado;
 
-    // ===== Datos especificos de Persona =====
+    // propios de Persona
     @NotNull(message = "El tipo de documento es obligatorio")
     private TipoDocumento tipoDocumento;
 
@@ -43,15 +42,16 @@ public class PersonaDTO {
     @Size(max = 50, message = "La nacionalidad no debe superar 50 caracteres")
     private String nacionalidad;
 
-    // ===== Atributos derivados (read-only, calculados por mapper) =====
+    // compuesto de nombre y apellido
     private String nombreCompleto;
+    // derivado por la fecha de nacimiento, no se almacena
     private Integer edad;
 
-    // ===== Constructores =====
+    
     public PersonaDTO() {
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdCliente() {
         return idCliente;
     }

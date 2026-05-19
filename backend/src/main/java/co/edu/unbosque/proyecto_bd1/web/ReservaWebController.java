@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,8 +34,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import co.edu.unbosque.proyecto_bd1.dto.HabitacionDTO;
+import co.edu.unbosque.proyecto_bd1.dto.ReservaHabitacionDTO;
+import co.edu.unbosque.proyecto_bd1.dto.TipoHabitacionDTO;
+import co.edu.unbosque.proyecto_bd1.enums.EstadoHabitacion;
+import co.edu.unbosque.proyecto_bd1.service.HabitacionService;
+import co.edu.unbosque.proyecto_bd1.service.ReservaHabitacionService;
+import co.edu.unbosque.proyecto_bd1.service.TipoHabitacionService;
 @Controller
 @RequestMapping("/reservas")
 public class ReservaWebController {
@@ -43,17 +52,25 @@ public class ReservaWebController {
     private final ClienteService clienteService;
     private final PagoService pagoService;
     private final EventoReservaService eventoReservaService;
+    private final HabitacionService habitacionService;
+    private final ReservaHabitacionService reservaHabitacionService;
+    private final TipoHabitacionService tipoHabitacionService;
 
-    public ReservaWebController(ReservaService reservaService,
+public ReservaWebController(ReservaService reservaService,
                                 ClienteService clienteService,
                                 PagoService pagoService,
-                                EventoReservaService eventoReservaService) {
+                                EventoReservaService eventoReservaService,
+                                HabitacionService habitacionService,
+                                ReservaHabitacionService reservaHabitacionService,
+                                TipoHabitacionService tipoHabitacionService) {
         this.reservaService = reservaService;
         this.clienteService = clienteService;
         this.pagoService = pagoService;
         this.eventoReservaService = eventoReservaService;
+        this.habitacionService = habitacionService;
+        this.reservaHabitacionService = reservaHabitacionService;
+        this.tipoHabitacionService = tipoHabitacionService;
     }
-
     private boolean tieneAcceso(UsuarioSesion sesion) {
         return sesion.isAdministrador() || sesion.isRecepcionista();
     }
@@ -155,7 +172,7 @@ public class ReservaWebController {
         return "reservas/lista";
     }
 
-    // ===== FORM CREAR =====
+// ===== FORM CREAR =====
     @GetMapping("/nueva")
     public String formCrear(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                             Model model,
@@ -173,15 +190,18 @@ public class ReservaWebController {
         model.addAttribute("empresas", clienteService.listarEmpresas());
         model.addAttribute("estados", EstadoReserva.values());
         model.addAttribute("canales", CanalReserva.values());
+        model.addAttribute("habitacionesDisponibles",
+            habitacionService.buscarPorEstado(EstadoHabitacion.Disponible.name()));
+        model.addAttribute("tipos", tipoHabitacionService.listarTodos());
         return "reservas/form";
     }
-
-    // ===== POST CREAR =====
+   // ===== POST CREAR (Reserva + asociaciones en una operacion) =====
     @PostMapping
+    @Transactional
     public String crear(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                         @ModelAttribute("reserva") ReservaDTO dto,
-                        BindingResult result,
-                        Model model,
+                        @RequestParam(value = "habitacionId", required = false) List<Integer> habitacionIds,
+                        @RequestParam(value = "huespedes", required = false) List<Byte> huespedes,
                         RedirectAttributes redirect) {
         if (!tieneAcceso(sesion)) {
             redirect.addFlashAttribute("mensajeError", "Sin permisos");
@@ -189,28 +209,122 @@ public class ReservaWebController {
         }
         dto.setFechaCreacion(LocalDateTime.now());
 
-        if (result.hasErrors()) {
-            model.addAttribute("personas", clienteService.listarPersonas());
-            model.addAttribute("empresas", clienteService.listarEmpresas());
-            model.addAttribute("estados", EstadoReserva.values());
-            model.addAttribute("canales", CanalReserva.values());
-            model.addAttribute("mensajeError",
-                "Hay errores en el formulario. Revisá los campos marcados.");
-            return "reservas/form";
-        }
-        try {
-            Integer idGenerado = reservaService.crear(dto);
-            redirect.addFlashAttribute("mensajeExito",
-                "Reserva #" + idGenerado + " creada correctamente");
-            return "redirect:/reservas/" + idGenerado;
-        } catch (Exception e) {
+        // ====== Validaciones de la lista de habitaciones ======
+        if (habitacionIds == null || habitacionIds.isEmpty()) {
             redirect.addFlashAttribute("mensajeError",
-                "Error al crear reserva: " + e.getMessage());
+                "Debe seleccionar al menos una habitación para la reserva.");
             return "redirect:/reservas/nueva";
         }
-    }
+        if (huespedes == null || huespedes.size() != habitacionIds.size()) {
+            redirect.addFlashAttribute("mensajeError",
+                "Los datos de habitaciones y huéspedes no coinciden.");
+            return "redirect:/reservas/nueva";
+        }
+        // Detectar duplicados
+        for (int i = 0; i < habitacionIds.size(); i++) {
+            for (int j = i + 1; j < habitacionIds.size(); j++) {
+                if (habitacionIds.get(i).equals(habitacionIds.get(j))) {
+                    redirect.addFlashAttribute("mensajeError",
+                        "No podés seleccionar la misma habitación dos veces.");
+                    return "redirect:/reservas/nueva";
+                }
+            }
+        }
 
-    // ===== DETALLE =====
+        // ====== Calcular precio total en el BACKEND ======
+        // (No confiamos en lo que mande el JS; recalculamos siempre con BD)
+        long horasEstadia = java.time.Duration.between(
+            dto.getFechaCheckInPrevista(),
+            dto.getFechaCheckOutPrevista()
+        ).toHours();
+        if (horasEstadia <= 0) {
+            redirect.addFlashAttribute("mensajeError",
+                "La fecha de check-out debe ser posterior a la de check-in.");
+            return "redirect:/reservas/nueva";
+        }
+        // Numero de noches = redondeo hacia arriba de horas/24, minimo 1
+        long noches = horasEstadia / 24;
+        if (horasEstadia % 24 != 0) {
+            noches = noches + 1;
+        }
+        if (noches < 1) {
+            noches = 1;
+        }
+
+        // Cargar habitaciones + tipos para multiplicar
+        List<HabitacionDTO> todasHabs = habitacionService.listarTodos();
+        Map<Integer, HabitacionDTO> habPorId = new HashMap<>();
+        for (int i = 0; i < todasHabs.size(); i++) {
+            HabitacionDTO h = todasHabs.get(i);
+            habPorId.put(h.getIdHabitacion(), h);
+        }
+        List<TipoHabitacionDTO> tipos = tipoHabitacionService.listarTodos();
+        Map<Integer, TipoHabitacionDTO> tipoPorId = new HashMap<>();
+        for (int i = 0; i < tipos.size(); i++) {
+            TipoHabitacionDTO t = tipos.get(i);
+            tipoPorId.put(t.getIdTipo(), t);
+        }
+
+        BigDecimal precioCalculado = BigDecimal.ZERO;
+        for (int i = 0; i < habitacionIds.size(); i++) {
+            Integer idHab = habitacionIds.get(i);
+            HabitacionDTO hab = habPorId.get(idHab);
+            if (hab == null) {
+                redirect.addFlashAttribute("mensajeError",
+                    "La habitación " + idHab + " no existe.");
+                return "redirect:/reservas/nueva";
+            }
+            TipoHabitacionDTO tipo = tipoPorId.get(hab.getIdTipo());
+            if (tipo == null) {
+                redirect.addFlashAttribute("mensajeError",
+                    "El tipo de la habitación " + hab.getCodigo() + " no se encontró.");
+                return "redirect:/reservas/nueva";
+            }
+            // Validar capacidad
+            Byte num = huespedes.get(i);
+            if (num == null || num < 1) {
+                redirect.addFlashAttribute("mensajeError",
+                    "El número de huéspedes para " + hab.getCodigo() + " debe ser al menos 1.");
+                return "redirect:/reservas/nueva";
+            }
+            if (num > tipo.getCapacidadMax()) {
+                redirect.addFlashAttribute("mensajeError",
+                    "La habitación " + hab.getCodigo() + " (" + tipo.getNombre()
+                    + ") admite máximo " + tipo.getCapacidadMax() + " huéspedes, recibiste " + num + ".");
+                return "redirect:/reservas/nueva";
+            }
+            BigDecimal subtotal = tipo.getPrecioBaseNoche()
+                .multiply(new BigDecimal(noches));
+            precioCalculado = precioCalculado.add(subtotal);
+        }
+        dto.setPrecioTotal(precioCalculado);
+
+        // ====== Crear la reserva y luego cada asociacion ======
+        try {
+            Integer idGenerado = reservaService.crear(dto);
+
+            for (int i = 0; i < habitacionIds.size(); i++) {
+                ReservaHabitacionDTO rh = new ReservaHabitacionDTO();
+                rh.setIdReserva(idGenerado);
+                rh.setIdHabitacion(habitacionIds.get(i));
+                rh.setNumeroHuespedes(huespedes.get(i));
+                reservaHabitacionService.crear(rh);
+            }
+
+            redirect.addFlashAttribute("mensajeExito",
+                "Reserva #" + idGenerado + " creada con "
+                + habitacionIds.size() + " habitación(es) por "
+                + noches + " noche(s). Precio total: "
+                + precioCalculado.toPlainString() + " COP");
+            return "redirect:/reservas/" + idGenerado;
+        } catch (Exception e) {
+            // @Transactional rebobina si lanzamos RuntimeException
+            redirect.addFlashAttribute("mensajeError",
+                "Error al crear reserva: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+   // ===== DETALLE =====
     @GetMapping("/{id}")
     public String detalle(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                           @PathVariable Integer id,
@@ -233,13 +347,56 @@ public class ReservaWebController {
                 }
             }
 
-            // PagoDTO precargado para el form de "Registrar pago"
+            // ====== HABITACIONES ASOCIADAS ======
+            List<ReservaHabitacionDTO> habitacionesAsociadas =
+                reservaHabitacionService.buscarPorReserva(id);
+
+            // Maps para enriquecer la tabla con datos legibles
+            List<HabitacionDTO> todasLasHabitaciones = habitacionService.listarTodos();
+            Map<Integer, HabitacionDTO> habitacionPorId = new HashMap<>();
+            for (int i = 0; i < todasLasHabitaciones.size(); i++) {
+                HabitacionDTO h = todasLasHabitaciones.get(i);
+                habitacionPorId.put(h.getIdHabitacion(), h);
+            }
+
+            List<TipoHabitacionDTO> todosLosTipos = tipoHabitacionService.listarTodos();
+            Map<Integer, TipoHabitacionDTO> tipoPorId = new HashMap<>();
+            for (int i = 0; i < todosLosTipos.size(); i++) {
+                TipoHabitacionDTO t = todosLosTipos.get(i);
+                tipoPorId.put(t.getIdTipo(), t);
+            }
+
+            // Calcular precio sugerido total segun habitaciones asociadas y noches
+            BigDecimal precioSugerido = BigDecimal.ZERO;
+            Integer noches = reserva.getNumeroNoches() != null ? reserva.getNumeroNoches() : 0;
+            for (int i = 0; i < habitacionesAsociadas.size(); i++) {
+                ReservaHabitacionDTO rh = habitacionesAsociadas.get(i);
+                HabitacionDTO hab = habitacionPorId.get(rh.getIdHabitacion());
+                if (hab != null) {
+                    TipoHabitacionDTO tipo = tipoPorId.get(hab.getIdTipo());
+                    if (tipo != null && tipo.getPrecioBaseNoche() != null) {
+                        BigDecimal subtotal = tipo.getPrecioBaseNoche()
+                            .multiply(new BigDecimal(noches));
+                        precioSugerido = precioSugerido.add(subtotal);
+                    }
+                }
+            }
+
+            // Listar solo habitaciones Disponibles para el dropdown del modal
+            List<HabitacionDTO> habitacionesDisponibles =
+                habitacionService.buscarPorEstado(EstadoHabitacion.Disponible.name());
+
+            // Precarga del DTO para el form
+            ReservaHabitacionDTO nuevaAsociacion = new ReservaHabitacionDTO();
+            nuevaAsociacion.setIdReserva(id);
+            nuevaAsociacion.setNumeroHuespedes((byte) 1);
+
+            // Precarga de DTOs y catalogos para el resto del detalle
             PagoDTO nuevoPago = new PagoDTO();
             nuevoPago.setIdReserva(id);
             nuevoPago.setEstado(EstadoPago.Aprobado);
             nuevoPago.setFechaPago(LocalDateTime.now());
 
-            // Cancelacion precargada con penalizacion sugerida
             CancelacionDTO nuevaCancelacion = new CancelacionDTO();
             nuevaCancelacion.setIdReserva(id);
             nuevaCancelacion.setIdEmpleado(sesion.getIdEmpleado());
@@ -256,13 +413,21 @@ public class ReservaWebController {
             model.addAttribute("nuevaCancelacion", nuevaCancelacion);
             model.addAttribute("mediosPago", MedioPago.values());
             model.addAttribute("estadosPago", EstadoPago.values());
+
+            // Modelo para habitaciones asociadas
+            model.addAttribute("habitacionesAsociadas", habitacionesAsociadas);
+            model.addAttribute("habitacionPorId", habitacionPorId);
+            model.addAttribute("tipoPorId", tipoPorId);
+            model.addAttribute("precioSugerido", precioSugerido);
+            model.addAttribute("habitacionesDisponibles", habitacionesDisponibles);
+            model.addAttribute("nuevaAsociacion", nuevaAsociacion);
+
             return "reservas/detalle";
         } catch (Exception e) {
             redirect.addFlashAttribute("mensajeError", e.getMessage());
             return "redirect:/reservas";
         }
     }
-
     // ===== CAMBIAR ESTADO (puerta administrativa) =====
     @PostMapping("/{id}/estado")
     public String cambiarEstado(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
@@ -465,4 +630,49 @@ public class ReservaWebController {
         }
         return "redirect:/reservas/" + id;
     }
+// ===========================================
+    // ========== HABITACIONES ASOCIADAS =========
+    // ===========================================
+
+    @PostMapping("/{id}/habitaciones")
+    public String asociarHabitacion(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                    @PathVariable Integer id,
+                                    @ModelAttribute("nuevaAsociacion") ReservaHabitacionDTO dto,
+                                    RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/reservas/" + id;
+        }
+        dto.setIdReserva(id);
+        try {
+            reservaHabitacionService.crear(dto);
+            redirect.addFlashAttribute("mensajeExito",
+                "Habitación asociada correctamente con " + dto.getNumeroHuespedes() + " huésped(es)");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al asociar habitación: " + e.getMessage());
+        }
+        return "redirect:/reservas/" + id;
+    }
+
+    @PostMapping("/{id}/habitaciones/{idHabitacion}/quitar")
+    public String quitarHabitacion(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                    @PathVariable Integer id,
+                                    @PathVariable Integer idHabitacion,
+                                    RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/reservas/" + id;
+        }
+        try {
+            reservaHabitacionService.eliminar(id, idHabitacion);
+            redirect.addFlashAttribute("mensajeExito",
+                "Habitación desvinculada de la reserva");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al quitar habitación: " + e.getMessage());
+        }
+        return "redirect:/reservas/" + id;
+    }
+
 }

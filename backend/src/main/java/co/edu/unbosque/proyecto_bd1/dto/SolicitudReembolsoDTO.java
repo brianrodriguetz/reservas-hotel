@@ -26,20 +26,20 @@ public class SolicitudReembolsoDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "El monto debe ser mayor a 0")
     private BigDecimal monto;
 
-    // Nullable: solo se llena cuando se procesa la solicitud
+    
     private LocalDateTime fechaProcesamiento;
 
     @NotNull(message = "El id de la cancelacion es obligatorio")
     @Positive(message = "El id de la cancelacion debe ser positivo")
     private Integer idCancelacion;
 
-    // Nullable: solo se asigna cuando un empleado toma la solicitud
+    
     private Integer idEmpleado;
 
     @NotNull(message = "La fecha de creacion es obligatoria")
     private LocalDateTime fecha;
 
-    // ===== Constructores =====
+   
     public SolicitudReembolsoDTO() {
     }
 

@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface AsignacionHuespedRepository
         extends JpaRepository<AsignacionHuesped, AsignacionHuespedId> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM asignacion_huesped", nativeQuery = true)
     List<AsignacionHuesped> listarTodos();
@@ -52,7 +52,7 @@ public interface AsignacionHuespedRepository
     Optional<AsignacionHuesped> buscarTitular(@Param("idReserva") Integer idReserva,
                                                @Param("idHabitacion") Integer idHabitacion);
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -64,7 +64,7 @@ public interface AsignacionHuespedRepository
                   @Param("idHabitacion") Integer idHabitacion,
                   @Param("esTitular") Boolean esTitular);
 
-    // ====== UPDATE ======
+    //actualizar
 
     @Modifying
     @Query(value = """
@@ -79,7 +79,7 @@ public interface AsignacionHuespedRepository
                            @Param("idHabitacion") Integer idHabitacion,
                            @Param("esTitular") Boolean esTitular);
 
-    // Quitar la bandera de titular a todos los huespedes de una reserva-habitacion
+    // cambiar titularidad de un hiesped de una habitacion
     @Modifying
     @Query(value = """
         UPDATE asignacion_huesped
@@ -89,8 +89,7 @@ public interface AsignacionHuespedRepository
     int desmarcarTitulares(@Param("idReserva") Integer idReserva,
                             @Param("idHabitacion") Integer idHabitacion);
 
-    // ====== DELETE ======
-
+    // borrar
     @Modifying
     @Query(value = """
         DELETE FROM asignacion_huesped

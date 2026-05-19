@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface ContactoRepository extends JpaRepository<Contacto, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM contacto", nativeQuery = true)
     List<Contacto> listarTodos();
@@ -30,7 +30,7 @@ public interface ContactoRepository extends JpaRepository<Contacto, Integer> {
     @Query(value = "SELECT * FROM contacto WHERE tipo_Contacto = :tipo", nativeQuery = true)
     List<Contacto> buscarPorTipo(@Param("tipo") String tipoContacto);
 
-    // ====== CREATE ======
+    //crrrrraer
 
     @Modifying
     @Query(value = """
@@ -42,7 +42,7 @@ public interface ContactoRepository extends JpaRepository<Contacto, Integer> {
                   @Param("principal") Boolean esPrincipal,
                   @Param("idCliente") Integer idCliente);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -59,7 +59,7 @@ public interface ContactoRepository extends JpaRepository<Contacto, Integer> {
                    @Param("principal") Boolean esPrincipal,
                    @Param("idCliente") Integer idCliente);
 
-    // Quitar bandera principal a todos los contactos de un cliente
+    // cquitar contacto princopal
     @Modifying
     @Query(value = """
         UPDATE contacto SET es_Principal = 0
@@ -67,7 +67,7 @@ public interface ContactoRepository extends JpaRepository<Contacto, Integer> {
         """, nativeQuery = true)
     int desmarcarPrincipalesDeCliente(@Param("idCliente") Integer idCliente);
 
-    // ====== DELETE ======
+    // borrar
 
     @Modifying
     @Query(value = "DELETE FROM contacto WHERE id_Contacto = :id", nativeQuery = true)

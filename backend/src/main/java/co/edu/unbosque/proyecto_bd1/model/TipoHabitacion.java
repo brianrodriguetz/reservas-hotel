@@ -34,7 +34,7 @@ private Byte numeroCamas;
     @Column(name = "precioBaseNoche", nullable = false, precision = 15, scale = 2)
     private BigDecimal precioBaseNoche;
 
-    // ===== Constructores =====
+  
     public TipoHabitacion() {
     }
 
@@ -45,7 +45,8 @@ private Byte numeroCamas;
     this.numeroCamas = numeroCamas;
     this.precioBaseNoche = precioBaseNoche;
 }
-    // ===== Getters y Setters =====
+
+
     public Integer getIdTipo() {
         return idTipo;
     }

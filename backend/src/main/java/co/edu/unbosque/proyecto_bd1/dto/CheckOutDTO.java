@@ -22,12 +22,26 @@ public class CheckOutDTO {
     public CheckOutDTO() {
     }
 
-    public Integer getIdEvento() { return idEvento; }
-    public void setIdEvento(Integer idEvento) { this.idEvento = idEvento; }
-    public LocalDateTime getFechaHora() { return fechaHora; }
-    public void setFechaHora(LocalDateTime fechaHora) { this.fechaHora = fechaHora; }
+    public Integer getIdEvento() { 
+        return idEvento; }
+
+    public void setIdEvento(Integer idEvento) {
+         this.idEvento = idEvento; }
+
+    public LocalDateTime getFechaHora() {
+         return fechaHora; }
+
+    public void setFechaHora(LocalDateTime fechaHora) { 
+        this.fechaHora = fechaHora; }
+
     public Integer getIdReserva() { return idReserva; }
-    public void setIdReserva(Integer idReserva) { this.idReserva = idReserva; }
-    public Integer getIdEmpleado() { return idEmpleado; }
-    public void setIdEmpleado(Integer idEmpleado) { this.idEmpleado = idEmpleado; }
+
+    public void setIdReserva(Integer idReserva) {
+         this.idReserva = idReserva; }
+
+    public Integer getIdEmpleado() {
+         return idEmpleado; }
+
+    public void setIdEmpleado(Integer idEmpleado) {
+         this.idEmpleado = idEmpleado; }
 }

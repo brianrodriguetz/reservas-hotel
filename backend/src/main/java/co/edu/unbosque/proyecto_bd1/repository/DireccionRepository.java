@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface DireccionRepository extends JpaRepository<Direccion, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM direccion", nativeQuery = true)
     List<Direccion> listarTodos();
@@ -40,12 +40,11 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer> {
     @Query(value = "SELECT * FROM direccion WHERE ciudad = :ciudad", nativeQuery = true)
     List<Direccion> buscarPorCiudad(@Param("ciudad") String ciudad);
 
-    // ====== CREATE ======
+    // crar
 
     @Modifying
     @Query(value = """
-        INSERT INTO direccion (tipo_Direccion, calle, numero, ciudad, departamento,
-                               codigo_Postal, pais, es_Principal, id_Cliente)
+        INSERT INTO direccion (tipo_Direccion, calle, numero, ciudad, departamento, codigo_Postal, pais, es_Principal, id_Cliente)
         VALUES (:tipo, :calle, :numero, :ciudad, :departamento,
                 :codigoPostal, :pais, :principal, :idCliente)
         """, nativeQuery = true)
@@ -59,8 +58,7 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer> {
                   @Param("principal") Boolean esPrincipal,
                   @Param("idCliente") Integer idCliente);
 
-    // ====== UPDATE ======
-
+    // actualizar
     @Modifying
     @Query(value = """
         UPDATE direccion
@@ -86,7 +84,7 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer> {
                    @Param("principal") Boolean esPrincipal,
                    @Param("idCliente") Integer idCliente);
 
-    // Desmarcar principales del mismo cliente Y TIPO (regla del supuesto B)
+    // quitar d principal
     @Modifying
     @Query(value = """
         UPDATE direccion SET es_Principal = 0
@@ -95,7 +93,7 @@ public interface DireccionRepository extends JpaRepository<Direccion, Integer> {
     int desmarcarPrincipalesDeClienteYTipo(@Param("idCliente") Integer idCliente,
                                             @Param("tipo") String tipoDireccion);
 
-    // ====== DELETE ======
+    //borar
 
     @Modifying
     @Query(value = "DELETE FROM direccion WHERE id_Direccion = :id", nativeQuery = true)

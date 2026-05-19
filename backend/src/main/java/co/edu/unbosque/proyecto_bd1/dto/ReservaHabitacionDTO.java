@@ -18,7 +18,7 @@ public class ReservaHabitacionDTO {
     @Min(value = 1, message = "El numero de huespedes debe ser al menos 1")
     private Byte numeroHuespedes;
 
-    // ===== Constructores =====
+   
     public ReservaHabitacionDTO() {
     }
 
@@ -28,7 +28,7 @@ public class ReservaHabitacionDTO {
         this.numeroHuespedes = numeroHuespedes;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdReserva() {
         return idReserva;
     }

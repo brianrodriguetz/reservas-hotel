@@ -31,7 +31,7 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // ============ PERSONAS ============
+    // PERSONAS 
 
     @GetMapping("/personas")
     @Operation(summary = "Listar todos los clientes tipo Persona")
@@ -69,7 +69,7 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============ EMPRESAS ============
+    // EMPRESAS 
 
     @GetMapping("/empresas")
     @Operation(summary = "Listar todos los clientes tipo Empresa")
@@ -106,7 +106,7 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============ COMUN ============
+    // ambas
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar cliente (CASCADE borra Persona o Empresa)")

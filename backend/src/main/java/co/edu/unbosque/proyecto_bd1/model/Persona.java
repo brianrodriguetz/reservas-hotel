@@ -42,7 +42,7 @@ public class Persona {
     @Column(name = "nacionalidad", nullable = false, length = 50)
     private String nacionalidad;
 
-    // ===== Constructores =====
+    
     public Persona() {
     }
 
@@ -57,7 +57,7 @@ public class Persona {
         this.nacionalidad = nacionalidad;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdCliente() {
         return idCliente;
     }
@@ -114,7 +114,7 @@ public class Persona {
         this.nacionalidad = nacionalidad;
     }
 
-    // ===== Equals / HashCode =====
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) {

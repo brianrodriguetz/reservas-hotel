@@ -8,7 +8,7 @@ public class ReservaHabitacionId implements Serializable {
     private Integer idReserva;
     private Integer idHabitacion;
 
-    // ===== Constructores =====
+
     public ReservaHabitacionId() {
     }
 
@@ -17,7 +17,7 @@ public class ReservaHabitacionId implements Serializable {
         this.idHabitacion = idHabitacion;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdReserva() {
         return idReserva;
     }
@@ -34,7 +34,7 @@ public class ReservaHabitacionId implements Serializable {
         this.idHabitacion = idHabitacion;
     }
 
-    // ===== Equals / HashCode (OBLIGATORIO para PK compuesta en JPA) =====
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) {

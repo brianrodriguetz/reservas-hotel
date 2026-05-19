@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class RolDTO {
 
-    // Sin validación: en respuestas viene de BD, en creación lo ignora la BD
+    
     private Integer idRol;
 
     @NotNull(message = "El nombre del rol es obligatorio")
@@ -16,7 +16,7 @@ public class RolDTO {
     @NotNull(message = "El estado es obligatorio")
     private EstadoActivo estado;
 
-    // ===== Constructores =====
+   
     public RolDTO() {
     }
 
@@ -26,7 +26,7 @@ public class RolDTO {
         this.estado = estado;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdRol() {
         return idRol;
     }

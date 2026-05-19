@@ -25,7 +25,7 @@ private Byte numeroCamas;
     @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor a 0")
     private BigDecimal precioBaseNoche;
 
-    // ===== Constructores =====
+   
     public TipoHabitacionDTO() {
     }
 
@@ -39,7 +39,7 @@ private Byte numeroCamas;
         this.precioBaseNoche = precioBaseNoche;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdTipo() {
         return idTipo;
     }

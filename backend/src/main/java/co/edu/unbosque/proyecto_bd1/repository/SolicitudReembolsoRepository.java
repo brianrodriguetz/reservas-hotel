@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudReembolso, Integer> {
 
-    // ====== READ ======
+    //listar
 
     @Query(value = "SELECT * FROM solicitud_reembolso", nativeQuery = true)
     List<SolicitudReembolso> listarTodos();
@@ -38,7 +38,7 @@ public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudRee
         """, nativeQuery = true)
     List<SolicitudReembolso> buscarPendientesSinAsignar();
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -59,7 +59,7 @@ public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudRee
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Integer ultimoIdGenerado();
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -80,7 +80,7 @@ public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudRee
                    @Param("fechaProcesamiento") LocalDateTime fechaProcesamiento,
                    @Param("idEmpleado") Integer idEmpleado);
 
-    // Asignar empleado a una solicitud pendiente
+    // asignar empleado a una solicitud pendiente
     @Modifying
     @Query(value = """
         UPDATE solicitud_reembolso SET id_Empleado = :idEmpleado
@@ -88,7 +88,7 @@ public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudRee
         """, nativeQuery = true)
     int asignarEmpleado(@Param("id") Integer id, @Param("idEmpleado") Integer idEmpleado);
 
-    // Procesar solicitud: cambia estado y registra fecha_Procesamiento
+    // procesar solicitud
     @Modifying
     @Query(value = """
         UPDATE solicitud_reembolso
@@ -99,7 +99,7 @@ public interface SolicitudReembolsoRepository extends JpaRepository<SolicitudRee
                  @Param("estado") String estado,
                  @Param("fechaProcesamiento") LocalDateTime fechaProcesamiento);
 
-    // ====== DELETE ======
+    // eliminar
 
     @Modifying
     @Query(value = "DELETE FROM solicitud_reembolso WHERE id_Solicitud = :id", nativeQuery = true)

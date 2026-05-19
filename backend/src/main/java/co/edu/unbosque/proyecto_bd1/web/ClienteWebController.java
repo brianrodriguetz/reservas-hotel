@@ -1,10 +1,16 @@
 package co.edu.unbosque.proyecto_bd1.web;
 
+import co.edu.unbosque.proyecto_bd1.dto.ContactoDTO;
+import co.edu.unbosque.proyecto_bd1.dto.DireccionDTO;
 import co.edu.unbosque.proyecto_bd1.dto.EmpresaDTO;
 import co.edu.unbosque.proyecto_bd1.dto.PersonaDTO;
 import co.edu.unbosque.proyecto_bd1.enums.EstadoActivo;
+import co.edu.unbosque.proyecto_bd1.enums.TipoContacto;
+import co.edu.unbosque.proyecto_bd1.enums.TipoDireccion;
 import co.edu.unbosque.proyecto_bd1.enums.TipoDocumento;
 import co.edu.unbosque.proyecto_bd1.service.ClienteService;
+import co.edu.unbosque.proyecto_bd1.service.ContactoService;
+import co.edu.unbosque.proyecto_bd1.service.DireccionService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.stereotype.Controller;
@@ -24,17 +30,44 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ClienteWebController {
 
     private final ClienteService clienteService;
+    private final ContactoService contactoService;
+    private final DireccionService direccionService;
 
-    public ClienteWebController(ClienteService clienteService) {
+    public ClienteWebController(ClienteService clienteService,
+                                ContactoService contactoService,
+                                DireccionService direccionService) {
         this.clienteService = clienteService;
+        this.contactoService = contactoService;
+        this.direccionService = direccionService;
     }
 
-    // ===== Helper: validar acceso =====
     private boolean tieneAcceso(UsuarioSesion sesion) {
         return sesion.isAdministrador() || sesion.isRecepcionista();
     }
 
-    // ===== LISTAR (Personas y Empresas en tabs) =====
+    /**
+     * Helper para precargar los catalogos comunes que necesitan los modals
+     * de contacto y direccion en los detalles.
+     */
+    private void agregarCatalogosClienteAlModel(Model model, Integer idCliente) {
+        ContactoDTO nuevoContacto = new ContactoDTO();
+        nuevoContacto.setIdCliente(idCliente);
+        nuevoContacto.setEsPrincipal(false);
+
+        DireccionDTO nuevaDireccion = new DireccionDTO();
+        nuevaDireccion.setIdCliente(idCliente);
+        nuevaDireccion.setEsPrincipal(false);
+
+        model.addAttribute("nuevoContacto", nuevoContacto);
+        model.addAttribute("nuevaDireccion", nuevaDireccion);
+        model.addAttribute("tiposContacto", TipoContacto.values());
+        model.addAttribute("tiposDireccion", TipoDireccion.values());
+    }
+
+    // ===========================================
+    // ============== LISTAR =====================
+    // ===========================================
+
     @GetMapping
     public String listar(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                          @RequestParam(value = "tab", required = false, defaultValue = "personas") String tab,
@@ -44,12 +77,8 @@ public class ClienteWebController {
             redirect.addFlashAttribute("mensajeError", "No tiene permisos para gestionar clientes");
             return "redirect:/";
         }
-
-        List<PersonaDTO> personas = clienteService.listarPersonas();
-        List<EmpresaDTO> empresas = clienteService.listarEmpresas();
-
-        model.addAttribute("personas", personas);
-        model.addAttribute("empresas", empresas);
+        model.addAttribute("personas", clienteService.listarPersonas());
+        model.addAttribute("empresas", clienteService.listarEmpresas());
         model.addAttribute("tabActivo", tab);
         return "clientes/lista";
     }
@@ -58,7 +87,6 @@ public class ClienteWebController {
     // ============== PERSONAS ===================
     // ===========================================
 
-    // ===== FORM CREAR PERSONA =====
     @GetMapping("/personas/nueva")
     public String formCrearPersona(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                    Model model,
@@ -68,7 +96,7 @@ public class ClienteWebController {
             return "redirect:/clientes";
         }
         PersonaDTO dto = new PersonaDTO();
-        dto.setEstado(EstadoActivo.Activo); // valor por defecto
+        dto.setEstado(EstadoActivo.Activo);
         model.addAttribute("persona", dto);
         model.addAttribute("tiposDocumento", TipoDocumento.values());
         model.addAttribute("estados", EstadoActivo.values());
@@ -76,7 +104,6 @@ public class ClienteWebController {
         return "clientes/form-persona";
     }
 
-    // ===== POST CREAR PERSONA =====
     @PostMapping("/personas")
     public String crearPersona(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                @Valid @ModelAttribute("persona") PersonaDTO dto,
@@ -104,7 +131,6 @@ public class ClienteWebController {
         return "redirect:/clientes?tab=personas";
     }
 
-    // ===== FORM EDITAR PERSONA =====
     @GetMapping("/personas/{id}/editar")
     public String formEditarPersona(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                     @PathVariable Integer id,
@@ -127,7 +153,6 @@ public class ClienteWebController {
         }
     }
 
-    // ===== POST EDITAR PERSONA =====
     @PostMapping("/personas/{id}/actualizar")
     public String actualizarPersona(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                     @PathVariable Integer id,
@@ -155,7 +180,6 @@ public class ClienteWebController {
         return "redirect:/clientes?tab=personas";
     }
 
-    // ===== DETALLE PERSONA =====
     @GetMapping("/personas/{id}")
     public String detallePersona(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                  @PathVariable Integer id,
@@ -167,7 +191,13 @@ public class ClienteWebController {
         }
         try {
             PersonaDTO dto = clienteService.buscarPersonaPorId(id);
+            List<ContactoDTO> contactos = contactoService.buscarPorCliente(id);
+            List<DireccionDTO> direcciones = direccionService.buscarPorCliente(id);
+
             model.addAttribute("persona", dto);
+            model.addAttribute("contactos", contactos);
+            model.addAttribute("direcciones", direcciones);
+            agregarCatalogosClienteAlModel(model, id);
             return "clientes/detalle-persona";
         } catch (Exception e) {
             redirect.addFlashAttribute("mensajeError", e.getMessage());
@@ -179,7 +209,6 @@ public class ClienteWebController {
     // ============== EMPRESAS ===================
     // ===========================================
 
-    // ===== FORM CREAR EMPRESA =====
     @GetMapping("/empresas/nueva")
     public String formCrearEmpresa(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                    Model model,
@@ -196,7 +225,6 @@ public class ClienteWebController {
         return "clientes/form-empresa";
     }
 
-    // ===== POST CREAR EMPRESA =====
     @PostMapping("/empresas")
     public String crearEmpresa(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                @Valid @ModelAttribute("empresa") EmpresaDTO dto,
@@ -223,7 +251,6 @@ public class ClienteWebController {
         return "redirect:/clientes?tab=empresas";
     }
 
-    // ===== FORM EDITAR EMPRESA =====
     @GetMapping("/empresas/{id}/editar")
     public String formEditarEmpresa(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                     @PathVariable Integer id,
@@ -245,7 +272,6 @@ public class ClienteWebController {
         }
     }
 
-    // ===== POST EDITAR EMPRESA =====
     @PostMapping("/empresas/{id}/actualizar")
     public String actualizarEmpresa(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                     @PathVariable Integer id,
@@ -272,7 +298,6 @@ public class ClienteWebController {
         return "redirect:/clientes?tab=empresas";
     }
 
-    // ===== DETALLE EMPRESA =====
     @GetMapping("/empresas/{id}")
     public String detalleEmpresa(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                                  @PathVariable Integer id,
@@ -284,7 +309,13 @@ public class ClienteWebController {
         }
         try {
             EmpresaDTO dto = clienteService.buscarEmpresaPorId(id);
+            List<ContactoDTO> contactos = contactoService.buscarPorCliente(id);
+            List<DireccionDTO> direcciones = direccionService.buscarPorCliente(id);
+
             model.addAttribute("empresa", dto);
+            model.addAttribute("contactos", contactos);
+            model.addAttribute("direcciones", direcciones);
+            agregarCatalogosClienteAlModel(model, id);
             return "clientes/detalle-empresa";
         } catch (Exception e) {
             redirect.addFlashAttribute("mensajeError", e.getMessage());
@@ -293,10 +324,9 @@ public class ClienteWebController {
     }
 
     // ===========================================
-    // ============== ELIMINAR ===================
+    // ============== ELIMINAR CLIENTE ===========
     // ===========================================
 
-    // ===== ELIMINAR CLIENTE (cualquier tipo, usa ON DELETE CASCADE) =====
     @PostMapping("/{id}/eliminar")
     public String eliminar(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
                            @PathVariable Integer id,
@@ -314,5 +344,114 @@ public class ClienteWebController {
                 "No se pudo eliminar el cliente (probablemente tiene reservas asociadas)");
         }
         return "redirect:/clientes?tab=" + tab;
+    }
+
+    // ===========================================
+    // ============== CONTACTOS ==================
+    // ===========================================
+
+    @PostMapping("/{id}/contactos")
+    public String crearContacto(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                @PathVariable Integer id,
+                                @ModelAttribute("nuevoContacto") ContactoDTO dto,
+                                @RequestParam("tipoCliente") String tipoCliente,
+                                RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/clientes";
+        }
+        dto.setIdCliente(id);
+        if (dto.getEsPrincipal() == null) {
+            dto.setEsPrincipal(false);
+        }
+        try {
+            contactoService.crear(dto);
+            redirect.addFlashAttribute("mensajeExito", "Contacto agregado correctamente");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al agregar contacto: " + e.getMessage());
+        }
+        // Redirigir al detalle del tipo correcto
+        if ("empresa".equals(tipoCliente)) {
+            return "redirect:/clientes/empresas/" + id;
+        }
+        return "redirect:/clientes/personas/" + id;
+    }
+
+    @PostMapping("/{id}/contactos/{idContacto}/eliminar")
+    public String eliminarContacto(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                    @PathVariable Integer id,
+                                    @PathVariable Integer idContacto,
+                                    @RequestParam("tipoCliente") String tipoCliente,
+                                    RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/clientes";
+        }
+        try {
+            contactoService.eliminar(idContacto);
+            redirect.addFlashAttribute("mensajeExito", "Contacto eliminado");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al eliminar contacto: " + e.getMessage());
+        }
+        if ("empresa".equals(tipoCliente)) {
+            return "redirect:/clientes/empresas/" + id;
+        }
+        return "redirect:/clientes/personas/" + id;
+    }
+
+    // ===========================================
+    // ============== DIRECCIONES ================
+    // ===========================================
+
+    @PostMapping("/{id}/direcciones")
+    public String crearDireccion(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                  @PathVariable Integer id,
+                                  @ModelAttribute("nuevaDireccion") DireccionDTO dto,
+                                  @RequestParam("tipoCliente") String tipoCliente,
+                                  RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/clientes";
+        }
+        dto.setIdCliente(id);
+        if (dto.getEsPrincipal() == null) {
+            dto.setEsPrincipal(false);
+        }
+        try {
+            direccionService.crear(dto);
+            redirect.addFlashAttribute("mensajeExito", "Dirección agregada correctamente");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al agregar dirección: " + e.getMessage());
+        }
+        if ("empresa".equals(tipoCliente)) {
+            return "redirect:/clientes/empresas/" + id;
+        }
+        return "redirect:/clientes/personas/" + id;
+    }
+
+    @PostMapping("/{id}/direcciones/{idDireccion}/eliminar")
+    public String eliminarDireccion(@SessionAttribute("usuarioSesion") UsuarioSesion sesion,
+                                     @PathVariable Integer id,
+                                     @PathVariable Integer idDireccion,
+                                     @RequestParam("tipoCliente") String tipoCliente,
+                                     RedirectAttributes redirect) {
+        if (!tieneAcceso(sesion)) {
+            redirect.addFlashAttribute("mensajeError", "Sin permisos");
+            return "redirect:/clientes";
+        }
+        try {
+            direccionService.eliminar(idDireccion);
+            redirect.addFlashAttribute("mensajeExito", "Dirección eliminada");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("mensajeError",
+                "Error al eliminar dirección: " + e.getMessage());
+        }
+        if ("empresa".equals(tipoCliente)) {
+            return "redirect:/clientes/empresas/" + id;
+        }
+        return "redirect:/clientes/personas/" + id;
     }
 }

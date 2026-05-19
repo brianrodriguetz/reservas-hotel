@@ -49,7 +49,7 @@ public class SolicitudReembolso {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
-    // ===== Constructores =====
+    
     public SolicitudReembolso() {
     }
 
@@ -66,7 +66,7 @@ public class SolicitudReembolso {
         this.fecha = fecha;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdSolicitud() {
         return idSolicitud;
     }

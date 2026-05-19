@@ -15,16 +15,12 @@
 
 <!--
   ===== NAVBAR =====
-  Lee session.usuarioSesion (puesto por AuthController).
-  Filtra opciones segun el rol:
-    - Administrador: ve TODO
-    - Recepcionista: NO ve Empleados ni Reembolsos ni Limpieza
-    - Personal_Limpieza: solo ve Habitaciones y Limpieza
+
 -->
 <nav th:fragment="navbar(activo)" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" th:href="@{/}">
-            <i class="bi bi-building"></i> Hotel Reservas
+            <i class="bi bi-building"></i> Hotels Group Colombia
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -122,7 +118,7 @@
 <footer th:fragment="footer" class="bg-light text-center py-3 mt-5 border-top">
     <div class="container">
         <small class="text-muted">
-            Proyecto Final - Bases de Datos 1 &mdash; Universidad El Bosque &mdash; 2026
+           StayFlow 
         </small>
     </div>
 </footer>

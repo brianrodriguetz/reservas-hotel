@@ -33,20 +33,18 @@ public class EmpleadoDTO {
     @Positive(message = "El id del rol debe ser positivo")
     private Integer idRol;
 
-    // Opcional: solo el Administrador no tiene supervisor
+   
     @Positive(message = "El id del supervisor debe ser positivo")
     private Integer idSupervisor;
 
-    // ===== Atributo derivado (NO se almacena, se calcula) =====
+    // cmpuesto de nombre y aplld
     private String nombreCompleto;
 
-    // ===== Constructores =====
+
     public EmpleadoDTO() {
     }
 
-    public EmpleadoDTO(Integer idEmpleado, String numeroDocumento, String usuario,
-                       String nombre, String apellido, EstadoActivo estado,
-                       Integer idRol, Integer idSupervisor) {
+    public EmpleadoDTO(Integer idEmpleado, String numeroDocumento, String usuario, String nombre, String apellido, EstadoActivo estado,Integer idRol, Integer idSupervisor) {
         this.idEmpleado = idEmpleado;
         this.numeroDocumento = numeroDocumento;
         this.usuario = usuario;
@@ -57,7 +55,7 @@ public class EmpleadoDTO {
         this.idSupervisor = idSupervisor;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdEmpleado() {
         return idEmpleado;
     }

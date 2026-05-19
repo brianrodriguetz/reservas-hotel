@@ -30,7 +30,7 @@ public class Rol {
     @Column(name = "estado", nullable = false, length = 10)
     private EstadoActivo estado;
 
-    // ===== Constructores =====
+ 
     public Rol() {
     }
 
@@ -39,7 +39,7 @@ public class Rol {
         this.estado = estado;
     }
 
-    // ===== Getters y Setters =====
+  
     public Integer getIdRol() {
         return idRol;
     }
@@ -64,7 +64,7 @@ public class Rol {
         this.estado = estado;
     }
 
-    // ===== Equals / HashCode =====
+  
     @Override
     public boolean equals(Object o) {
         if (this == o) {

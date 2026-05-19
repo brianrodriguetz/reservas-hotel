@@ -34,7 +34,7 @@ public class ClienteService {
         this.clienteMapper = clienteMapper;
     }
 
-    // ====== READ - PERSONAS ======
+    // listar personas
 
     @Transactional(readOnly = true)
     public List<PersonaDTO> listarPersonas() {
@@ -75,7 +75,7 @@ public class ClienteService {
         return clienteMapper.aPersonaDTO(cliente.get(), persona.get());
     }
 
-    // ====== READ - EMPRESAS ======
+    // listar solo empresas
 
     @Transactional(readOnly = true)
     public List<EmpresaDTO> listarEmpresas() {
@@ -115,7 +115,7 @@ public class ClienteService {
         return clienteMapper.aEmpresaDTO(cliente.get(), empresa.get());
     }
 
-    // ====== CREATE ======
+    // crear
 
     @Transactional
     public Integer crearPersona(PersonaDTO dto) {
@@ -153,7 +153,7 @@ public class ClienteService {
         return idGenerado;
     }
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Transactional
     public void actualizarPersona(Integer id, PersonaDTO dto) {
@@ -193,7 +193,7 @@ public class ClienteService {
         }
     }
 
-    // ====== DELETE ======
+    // borrar
 
     @Transactional
     public void eliminar(Integer id) {

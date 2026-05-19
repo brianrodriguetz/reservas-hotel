@@ -34,7 +34,7 @@ public class CancelacionDTO {
     public CancelacionDTO() {
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdEvento() {
         return idEvento;
     }

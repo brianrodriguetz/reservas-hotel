@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface HuespedRepository extends JpaRepository<Huesped, Integer> {
 
-    // ====== READ ======
+    //listar
 
     @Query(value = "SELECT * FROM huesped", nativeQuery = true)
     List<Huesped> listarTodos();
@@ -32,12 +32,11 @@ public interface HuespedRepository extends JpaRepository<Huesped, Integer> {
            nativeQuery = true)
     List<Huesped> buscarPorApellido(@Param("apellido") String apellido);
 
-    // ====== CREATE ======
+    // crrer
 
     @Modifying
     @Query(value = """
-        INSERT INTO huesped (nombre, apellido, tipo_Documento, numero_Documento,
-                             nacionalidad, fecha_Nacimiento)
+        INSERT INTO huesped (nombre, apellido, tipo_Documento, numero_Documento, nacionalidad, fecha_Nacimiento)
         VALUES (:nombre, :apellido, :tipoDoc, :numeroDoc, :nacionalidad, :fechaNac)
         """, nativeQuery = true)
     void insertar(@Param("nombre") String nombre,
@@ -47,7 +46,7 @@ public interface HuespedRepository extends JpaRepository<Huesped, Integer> {
                   @Param("nacionalidad") String nacionalidad,
                   @Param("fechaNac") LocalDate fechaNacimiento);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -68,7 +67,7 @@ public interface HuespedRepository extends JpaRepository<Huesped, Integer> {
                    @Param("nacionalidad") String nacionalidad,
                    @Param("fechaNac") LocalDate fechaNacimiento);
 
-    // ====== DELETE ======
+    // borrar
 
     @Modifying
     @Query(value = "DELETE FROM huesped WHERE id_Huesped = :id", nativeQuery = true)

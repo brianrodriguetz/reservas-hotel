@@ -9,7 +9,7 @@ public class AsignacionHuespedId implements Serializable {
     private Integer idReserva;
     private Integer idHabitacion;
 
-    // ===== Constructores =====
+
     public AsignacionHuespedId() {
     }
 
@@ -19,7 +19,7 @@ public class AsignacionHuespedId implements Serializable {
         this.idHabitacion = idHabitacion;
     }
 
-    // ===== Getters y Setters =====
+
     public Integer getIdHuesped() {
         return idHuesped;
     }
@@ -44,7 +44,7 @@ public class AsignacionHuespedId implements Serializable {
         this.idHabitacion = idHabitacion;
     }
 
-    // ===== Equals / HashCode (OBLIGATORIO para PK compuesta) =====
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

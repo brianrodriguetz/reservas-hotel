@@ -44,14 +44,11 @@ public class DireccionDTO {
     @Positive(message = "El id del cliente debe ser positivo")
     private Integer idCliente;
 
-    // ===== Constructores =====
+    
     public DireccionDTO() {
     }
 
-    public DireccionDTO(Integer idDireccion, TipoDireccion tipoDireccion, String calle,
-                        String numero, String ciudad, String departamento,
-                        String codigoPostal, String pais, Boolean esPrincipal,
-                        Integer idCliente) {
+    public DireccionDTO(Integer idDireccion, TipoDireccion tipoDireccion, String calle, String numero, String ciudad, String departamento, String codigoPostal, String pais, Boolean esPrincipal,Integer idCliente) {
         this.idDireccion = idDireccion;
         this.tipoDireccion = tipoDireccion;
         this.calle = calle;
@@ -64,7 +61,7 @@ public class DireccionDTO {
         this.idCliente = idCliente;
     }
 
-    // ===== Getters y Setters =====
+ 
     public Integer getIdDireccion() {
         return idDireccion;
     }

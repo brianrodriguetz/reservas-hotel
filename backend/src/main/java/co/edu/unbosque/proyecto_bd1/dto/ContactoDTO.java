@@ -24,7 +24,7 @@ public class ContactoDTO {
     @Positive(message = "El id del cliente debe ser positivo")
     private Integer idCliente;
 
-    // ===== Constructores =====
+   
     public ContactoDTO() {
     }
 
@@ -37,7 +37,7 @@ public class ContactoDTO {
         this.idCliente = idCliente;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdContacto() {
         return idContacto;
     }

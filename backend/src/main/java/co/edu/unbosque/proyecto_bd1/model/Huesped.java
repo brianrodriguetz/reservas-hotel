@@ -45,7 +45,7 @@ public class Huesped {
     @Column(name = "fecha_Nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    // ===== Constructores =====
+   
     public Huesped() {
     }
 
@@ -59,7 +59,7 @@ public class Huesped {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdHuesped() {
         return idHuesped;
     }
@@ -116,7 +116,7 @@ public class Huesped {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // ===== Equals / HashCode =====
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

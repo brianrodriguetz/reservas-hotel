@@ -35,10 +35,10 @@ public class ReservaDTO {
     @Positive(message = "El id del cliente debe ser positivo")
     private Integer idCliente;
 
-    // ===== Atributo derivado (calculado en mapper) =====
+    // derivado y nos e almacena
     private Integer numeroNoches;
 
-    // ===== Constructores =====
+    
     public ReservaDTO() {
     }
 
@@ -55,7 +55,7 @@ public class ReservaDTO {
         this.idCliente = idCliente;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdReserva() {
         return idReserva;
     }

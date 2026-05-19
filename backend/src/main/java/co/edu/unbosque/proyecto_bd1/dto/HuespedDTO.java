@@ -34,11 +34,12 @@ public class HuespedDTO {
     @Past(message = "La fecha de nacimiento debe ser en el pasado")
     private LocalDate fechaNacimiento;
 
-    // ===== Atributos derivados (NO se almacenan, se calculan) =====
+    // compuesto de nombre y apellido
     private String nombreCompleto;
+    // derivasdo por la fehca de nacimiento, no se almacena 
     private Integer edad;
 
-    // ===== Constructores =====
+   
     public HuespedDTO() {
     }
 
@@ -54,7 +55,6 @@ public class HuespedDTO {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // ===== Getters y Setters =====
     public Integer getIdHuesped() {
         return idHuesped;
     }

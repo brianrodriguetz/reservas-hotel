@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/css/**",
                 "/js/**",
                 "/images/**",
-                "/api/**",                 // REST sigue abierto para Swagger demo
+                "/api/**",               
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**",

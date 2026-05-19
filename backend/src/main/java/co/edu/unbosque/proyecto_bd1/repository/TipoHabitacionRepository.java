@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TipoHabitacionRepository extends JpaRepository<TipoHabitacion, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM tipo_habitacion", nativeQuery = true)
     List<TipoHabitacion> listarTodos();
@@ -26,7 +26,7 @@ public interface TipoHabitacionRepository extends JpaRepository<TipoHabitacion, 
        nativeQuery = true)
 List<TipoHabitacion> buscarPorCapacidadMinima(@Param("capacidad") Byte capacidad);
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -38,7 +38,7 @@ List<TipoHabitacion> buscarPorCapacidadMinima(@Param("capacidad") Byte capacidad
                   @Param("camas") Byte numeroCamas,
                   @Param("precio") BigDecimal precioBaseNoche);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -54,7 +54,7 @@ List<TipoHabitacion> buscarPorCapacidadMinima(@Param("capacidad") Byte capacidad
                @Param("capacidad") Byte capacidadMax,
                @Param("camas") Byte numeroCamas,
                @Param("precio") BigDecimal precioBaseNoche);
-    // ====== DELETE ======
+    // borrar
 
     @Modifying
     @Query(value = "DELETE FROM tipo_habitacion WHERE id_Tipo = :id", nativeQuery = true)

@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM cliente", nativeQuery = true)
     List<Cliente> listarTodos();
@@ -21,7 +21,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     @Query(value = "SELECT * FROM cliente WHERE estado = :estado", nativeQuery = true)
     List<Cliente> buscarPorEstado(@Param("estado") String estado);
 
-    // ====== CREATE ======
+    // crar
 
     @Modifying
     @Query(value = """
@@ -34,14 +34,14 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Integer ultimoIdGenerado();
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = "UPDATE cliente SET estado = :estado WHERE id_Cliente = :id",
            nativeQuery = true)
     int actualizarEstado(@Param("id") Integer id, @Param("estado") String estado);
 
-    // ====== DELETE ======
+    // borrrar
 
     @Modifying
     @Query(value = "DELETE FROM cliente WHERE id_Cliente = :id", nativeQuery = true)

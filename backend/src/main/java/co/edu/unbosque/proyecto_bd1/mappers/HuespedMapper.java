@@ -23,8 +23,6 @@ public class HuespedMapper {
         dto.setNumeroDocumento(entidad.getNumeroDocumento());
         dto.setNacionalidad(entidad.getNacionalidad());
         dto.setFechaNacimiento(entidad.getFechaNacimiento());
-
-        // Atributos derivados
         dto.setNombreCompleto(calcularNombreCompleto(entidad));
         dto.setEdad(calcularEdad(entidad.getFechaNacimiento()));
 
@@ -57,7 +55,7 @@ public class HuespedMapper {
         return resultado;
     }
 
-    // ===== Calculo de atributos derivados =====
+   
 
     private String calcularNombreCompleto(Huesped entidad) {
         if (entidad.getNombre() == null && entidad.getApellido() == null) {

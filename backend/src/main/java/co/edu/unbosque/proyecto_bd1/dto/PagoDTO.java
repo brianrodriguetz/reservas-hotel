@@ -29,7 +29,7 @@ public class PagoDTO {
     @Positive(message = "El id de la reserva debe ser positivo")
     private Integer idReserva;
 
-    // ===== Constructores =====
+   
     public PagoDTO() {
     }
 

@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface ReservaHabitacionRepository
         extends JpaRepository<ReservaHabitacion, ReservaHabitacionId> {
 
-    // ====== READ ======
+    // lis  
 
     @Query(value = "SELECT * FROM reserva_habitacion", nativeQuery = true)
     List<ReservaHabitacion> listarTodos();
@@ -32,8 +32,7 @@ public interface ReservaHabitacionRepository
            nativeQuery = true)
     List<ReservaHabitacion> buscarPorHabitacion(@Param("idHabitacion") Integer idHabitacion);
 
-    // ====== CREATE ======
-
+    // crear
     @Modifying
     @Query(value = """
         INSERT INTO reserva_habitacion (id_Reserva, id_Habitacion, numero_huespedes)
@@ -43,7 +42,7 @@ public interface ReservaHabitacionRepository
                   @Param("idHabitacion") Integer idHabitacion,
                   @Param("numHuespedes") Byte numeroHuespedes);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
     @Query(value = """
@@ -55,7 +54,7 @@ public interface ReservaHabitacionRepository
                                    @Param("idHabitacion") Integer idHabitacion,
                                    @Param("numHuespedes") Byte numeroHuespedes);
 
-    // ====== DELETE ======
+    // eliminar
 
     @Modifying
     @Query(value = """

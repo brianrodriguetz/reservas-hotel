@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 public class EmpresaDTO {
 
-    // ===== Datos del Cliente padre =====
+    // heredados deCliente
     private Integer idCliente;
     private LocalDateTime fechaRegistro;
 
     @NotNull(message = "El estado es obligatorio")
     private EstadoActivo estado;
 
-    // ===== Datos especificos de Empresa =====
+    // propios de eMpresa
     @NotBlank(message = "El NIT es obligatorio")
     @Size(max = 20, message = "El NIT no debe superar 20 caracteres")
     private String nit;
@@ -32,11 +32,11 @@ public class EmpresaDTO {
     @Size(max = 100, message = "El sector economico no debe superar 100 caracteres")
     private String sectorEconomico;
 
-    // ===== Constructores =====
+    
     public EmpresaDTO() {
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdCliente() {
         return idCliente;
     }

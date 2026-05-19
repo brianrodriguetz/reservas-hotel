@@ -26,7 +26,7 @@ public class HabitacionDTO {
     @Positive(message = "El id del tipo debe ser positivo")
     private Integer idTipo;
 
-    // ===== Constructores =====
+ 
     public HabitacionDTO() {
     }
 
@@ -39,7 +39,7 @@ public class HabitacionDTO {
         this.idTipo = idTipo;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdHabitacion() {
         return idHabitacion;
     }

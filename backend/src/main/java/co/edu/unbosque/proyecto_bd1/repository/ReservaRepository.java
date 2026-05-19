@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
-    // ====== READ ======
+    // listar
 
     @Query(value = "SELECT * FROM reserva", nativeQuery = true)
     List<Reserva> listarTodos();
@@ -29,7 +29,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     @Query(value = "SELECT * FROM reserva WHERE canal = :canal", nativeQuery = true)
     List<Reserva> buscarPorCanal(@Param("canal") String canal);
 
-    // Reservas activas (Confirmada o En_Curso) en un rango de fechas
+    // reservas activas 
     @Query(value = """
         SELECT * FROM reserva
         WHERE estado IN ('Confirmada','En_Curso')
@@ -39,7 +39,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     List<Reserva> buscarActivasEnRango(@Param("inicio") LocalDateTime inicio,
                                        @Param("fin") LocalDateTime fin);
 
-    // Reservas creadas en un periodo
+    // flitrar por fecha
     @Query(value = """
         SELECT * FROM reserva
         WHERE fecha_Creacion BETWEEN :inicio AND :fin
@@ -47,7 +47,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     List<Reserva> buscarPorPeriodoCreacion(@Param("inicio") LocalDateTime inicio,
                                             @Param("fin") LocalDateTime fin);
 
-    // ====== CREATE ======
+    // crear
 
     @Modifying
     @Query(value = """
@@ -67,7 +67,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Integer ultimoIdGenerado();
 
-    // ====== UPDATE ======
+    // act
 
     @Modifying
     @Query(value = """
@@ -93,7 +93,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
            nativeQuery = true)
     int actualizarEstado(@Param("id") Integer id, @Param("estado") String estado);
 
-    // ====== DELETE ======
+    //eliminar
 
     @Modifying
     @Query(value = "DELETE FROM reserva WHERE id_Reserva = :id", nativeQuery = true)

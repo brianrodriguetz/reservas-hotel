@@ -46,7 +46,7 @@ public class Reserva {
     @Column(name = "id_Cliente", nullable = false)
     private Integer idCliente;
 
-    // ===== Constructores =====
+    
     public Reserva() {
     }
 
@@ -62,7 +62,7 @@ public class Reserva {
         this.idCliente = idCliente;
     }
 
-    // ===== Getters y Setters =====
+   
     public Integer getIdReserva() {
         return idReserva;
     }
@@ -127,7 +127,7 @@ public class Reserva {
         this.idCliente = idCliente;
     }
 
-    // ===== Equals / HashCode =====
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) {

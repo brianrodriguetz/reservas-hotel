@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ============================================ -->
+<!-- ====== FRAGMENTO: Tabla de Contactos ======= -->
+<!-- ============================================ -->
+<div th:fragment="seccionContactos(idCliente, tipoCliente)" class="card shadow-sm mb-3">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-telephone"></i> Contactos</h5>
+        <button type="button" class="btn btn-sm btn-primary"
+                data-bs-toggle="modal" data-bs-target="#modalContacto">
+            <i class="bi bi-plus-lg"></i> Agregar contacto
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th class="text-center">Principal</th>
+                    <th class="text-end">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${contactos.isEmpty()}">
+                    <td colspan="4" class="text-center text-muted py-3">
+                        <i class="bi bi-inbox"></i> Sin contactos registrados.
+                    </td>
+                </tr>
+                <tr th:each="c : ${contactos}">
+                    <td>
+                        <span class="badge bg-light text-dark border"
+                              th:text="${#strings.replace(c.tipoContacto.name(), '_', ' ')}">Tipo</span>
+                    </td>
+                    <td th:text="${c.valor}">valor@correo.com</td>
+                    <td class="text-center">
+                        <i th:if="${c.esPrincipal}" class="bi bi-star-fill text-warning" title="Principal"></i>
+                        <span th:unless="${c.esPrincipal}" class="text-muted">—</span>
+                    </td>
+                    <td class="text-end">
+                        <form th:action="@{/clientes/{id}/contactos/{idCont}/eliminar(id=${idCliente},idCont=${c.idContacto})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar este contacto?');">
+                            <input type="hidden" name="tipoCliente" th:value="${tipoCliente}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ====== FRAGMENTO: Tabla de Direcciones ===== -->
+<!-- ============================================ -->
+<div th:fragment="seccionDirecciones(idCliente, tipoCliente)" class="card shadow-sm mb-3">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Direcciones</h5>
+        <button type="button" class="btn btn-sm btn-primary"
+                data-bs-toggle="modal" data-bs-target="#modalDireccion">
+            <i class="bi bi-plus-lg"></i> Agregar dirección
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Dirección</th>
+                    <th>Ciudad / Depto</th>
+                    <th>País</th>
+                    <th>CP</th>
+                    <th class="text-center">Principal</th>
+                    <th class="text-end">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${direcciones.isEmpty()}">
+                    <td colspan="7" class="text-center text-muted py-3">
+                        <i class="bi bi-inbox"></i> Sin direcciones registradas.
+                    </td>
+                </tr>
+                <tr th:each="d : ${direcciones}">
+                    <td>
+                        <span class="badge bg-light text-dark border" th:text="${d.tipoDireccion}">Residencia</span>
+                    </td>
+                    <td>
+                        <strong th:text="${d.calle}">Calle</strong>
+                        <span th:text="' #' + ${d.numero}">#0</span>
+                    </td>
+                    <td>
+                        <span th:text="${d.ciudad}">Bogotá</span>
+                        <small class="text-muted" th:text="' / ' + ${d.departamento}">/ Cund.</small>
+                    </td>
+                    <td th:text="${d.pais}">Colombia</td>
+                    <td><code th:text="${d.codigoPostal}">110111</code></td>
+                    <td class="text-center">
+                        <i th:if="${d.esPrincipal}" class="bi bi-star-fill text-warning" title="Principal"></i>
+                        <span th:unless="${d.esPrincipal}" class="text-muted">—</span>
+                    </td>
+                    <td class="text-end">
+                        <form th:action="@{/clientes/{id}/direcciones/{idDir}/eliminar(id=${idCliente},idDir=${d.idDireccion})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta dirección?');">
+                            <input type="hidden" name="tipoCliente" th:value="${tipoCliente}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ====== FRAGMENTO: Modal Contacto =========== -->
+<!-- ============================================ -->
+<div th:fragment="modalContacto(idCliente, tipoCliente)" class="modal fade" id="modalContacto" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/clientes/{id}/contactos(id=${idCliente})}"
+                  th:object="${nuevoContacto}" method="post">
+                <input type="hidden" name="tipoCliente" th:value="${tipoCliente}">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-telephone"></i> Nuevo contacto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        El cliente debe tener exactamente un contacto marcado como principal.
+                        Si marcás este como principal, se desmarcarán los anteriores.
+                    </div>
+                    <div class="mb-3">
+                        <label for="contTipo" class="form-label">Tipo de contacto *</label>
+                        <select id="contTipo" th:field="*{tipoContacto}" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            <option th:each="t : ${tiposContacto}"
+                                    th:value="${t.name()}"
+                                    th:text="${#strings.replace(t.name(), '_', ' ')}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contValor" class="form-label">Valor *</label>
+                        <input type="text" id="contValor" th:field="*{valor}"
+                               class="form-control" maxlength="150" required
+                               placeholder="Ej: 3001234567 o nombre@correo.com">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="contPrincipal" th:field="*{esPrincipal}"
+                               class="form-check-input" value="true">
+                        <label for="contPrincipal" class="form-check-label">
+                            Marcar como contacto principal
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Agregar contacto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ====== FRAGMENTO: Modal Direccion ========== -->
+<!-- ============================================ -->
+<div th:fragment="modalDireccion(idCliente, tipoCliente)" class="modal fade" id="modalDireccion" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form th:action="@{/clientes/{id}/direcciones(id=${idCliente})}"
+                  th:object="${nuevaDireccion}" method="post">
+                <input type="hidden" name="tipoCliente" th:value="${tipoCliente}">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-geo-alt"></i> Nueva dirección</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        El cliente debe tener una dirección principal por cada tipo (Residencia y Facturación).
+                        Si marcás esta como principal, se desmarcarán las del mismo tipo.
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="dirTipo" class="form-label">Tipo *</label>
+                            <select id="dirTipo" th:field="*{tipoDireccion}" class="form-select" required>
+                                <option value="">— Seleccionar —</option>
+                                <option th:each="t : ${tiposDireccion}"
+                                        th:value="${t.name()}"
+                                        th:text="${t.name()}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dirPais" class="form-label">País *</label>
+                            <input type="text" id="dirPais" th:field="*{pais}"
+                                   class="form-control" maxlength="50" required
+                                   placeholder="Colombia">
+                        </div>
+                        <div class="col-md-8">
+                            <label for="dirCalle" class="form-label">Calle *</label>
+                            <input type="text" id="dirCalle" th:field="*{calle}"
+                                   class="form-control" maxlength="100" required
+                                   placeholder="Calle 100">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="dirNumero" class="form-label">Número *</label>
+                            <input type="text" id="dirNumero" th:field="*{numero}"
+                                   class="form-control" maxlength="20" required
+                                   placeholder="#12-34">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="dirCiudad" class="form-label">Ciudad *</label>
+                            <input type="text" id="dirCiudad" th:field="*{ciudad}"
+                                   class="form-control" maxlength="80" required
+                                   placeholder="Bogotá">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="dirDepartamento" class="form-label">Departamento *</label>
+                            <input type="text" id="dirDepartamento" th:field="*{departamento}"
+                                   class="form-control" maxlength="80" required
+                                   placeholder="Cundinamarca">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dirCP" class="form-label">CP *</label>
+                            <input type="text" id="dirCP" th:field="*{codigoPostal}"
+                                   class="form-control" maxlength="10" required
+                                   placeholder="110111">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input type="checkbox" id="dirPrincipal" th:field="*{esPrincipal}"
+                                       class="form-check-input" value="true">
+                                <label for="dirPrincipal" class="form-check-label">
+                                    Marcar como dirección principal de este tipo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Agregar dirección
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

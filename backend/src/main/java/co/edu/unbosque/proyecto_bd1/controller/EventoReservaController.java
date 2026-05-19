@@ -33,7 +33,7 @@ public class EventoReservaController {
         this.eventoReservaService = eventoReservaService;
     }
 
-    // ============ CHECK-INS ============
+    // chck ines
 
     @GetMapping("/checkins")
     @Operation(summary = "Listar todos los check-ins")
@@ -56,7 +56,9 @@ public class EventoReservaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
-    // ============ CHECK-OUTS ============
+    // ckech outs
+
+
 
     @GetMapping("/checkouts")
     @Operation(summary = "Listar todos los check-outs")
@@ -79,7 +81,7 @@ public class EventoReservaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
-    // ============ CANCELACIONES ============
+    // cancelaciones
 
     @GetMapping("/cancelaciones")
     @Operation(summary = "Listar todas las cancelaciones")
@@ -111,7 +113,7 @@ public class EventoReservaController {
         return ResponseEntity.noContent().build();
     }
 
-    // ============ COMUN ============
+    // los 3
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar evento (CASCADE borra la hija CheckIn/CheckOut/Cancelacion)")

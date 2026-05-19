@@ -27,7 +27,7 @@ public class AsignacionHuesped {
     @Column(name = "es_Titular", nullable = false)
     private Boolean esTitular;
 
-    // ===== Constructores =====
+    
     public AsignacionHuesped() {
     }
 
@@ -39,7 +39,7 @@ public class AsignacionHuesped {
         this.esTitular = esTitular;
     }
 
-    // ===== Getters y Setters =====
+    
     public Integer getIdHuesped() {
         return idHuesped;
     }
@@ -72,7 +72,7 @@ public class AsignacionHuesped {
         this.esTitular = esTitular;
     }
 
-    // ===== Equals / HashCode =====
+ 
     @Override
     public boolean equals(Object o) {
         if (this == o) {

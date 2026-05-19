@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
 
-    // ====== READ ======
+    // leer
 
     @Query(value = "SELECT * FROM pago", nativeQuery = true)
     List<Pago> listarTodos();
@@ -36,14 +36,14 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
     List<Pago> buscarPorPeriodo(@Param("inicio") LocalDateTime inicio,
                                 @Param("fin") LocalDateTime fin);
 
-    // Suma de pagos procesados para una reserva (util para conciliar con precio_Total)
+    // total depagos de la resrv
     @Query(value = """
     SELECT COALESCE(SUM(monto), 0) FROM pago
     WHERE id_Reserva = :idReserva AND estado = 'Aprobado'
     """, nativeQuery = true)
 BigDecimal sumaPagadaDeReserva(@Param("idReserva") Integer idReserva);
 
-    // ====== CREATE ======
+    // craer
 
     @Modifying
     @Query(value = """
@@ -56,7 +56,7 @@ BigDecimal sumaPagadaDeReserva(@Param("idReserva") Integer idReserva);
                   @Param("estado") String estado,
                   @Param("idReserva") Integer idReserva);
 
-    // ====== UPDATE ======
+    // actualizar
 
     @Modifying
  @Query(value = """
@@ -79,7 +79,7 @@ BigDecimal sumaPagadaDeReserva(@Param("idReserva") Integer idReserva);
     @Query(value = "UPDATE pago SET estado = :estado WHERE id_Pago = :id", nativeQuery = true)
     int actualizarEstado(@Param("id") Integer id, @Param("estado") String estado);
 
-    // ====== DELETE ======
+    //borrar
 
     @Modifying
     @Query(value = "DELETE FROM pago WHERE id_Pago = :id", nativeQuery = true)

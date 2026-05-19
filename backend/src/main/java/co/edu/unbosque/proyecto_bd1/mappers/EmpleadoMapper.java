@@ -23,7 +23,7 @@ public class EmpleadoMapper {
         dto.setIdRol(entidad.getIdRol());
         dto.setIdSupervisor(entidad.getIdSupervisor());
 
-        // Atributo derivado
+      
         dto.setNombreCompleto(calcularNombreCompleto(entidad));
 
         return dto;
@@ -56,7 +56,6 @@ public class EmpleadoMapper {
         return resultado;
     }
 
-    // ===== Calculo de atributo derivado =====
 
     private String calcularNombreCompleto(Empleado entidad) {
         if (entidad.getNombre() == null && entidad.getApellido() == null) {

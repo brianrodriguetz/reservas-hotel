@@ -3,10 +3,7 @@ package co.edu.unbosque.proyecto_bd1.web;
 import co.edu.unbosque.proyecto_bd1.enums.NombreRol;
 import java.io.Serializable;
 
-/**
- * Objeto que se guarda en HttpSession para representar al empleado logueado.
- * Implementa Serializable porque las sesiones de Spring se pueden serializar.
- */
+
 public class UsuarioSesion implements Serializable {
 
     private static final long serialVersionUID = 1L;
