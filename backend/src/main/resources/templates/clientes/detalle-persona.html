@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detalle persona')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('clientes')}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/clientes(tab='personas')}">Clientes</a></li>
+            <li class="breadcrumb-item active">Detalle persona</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${persona.nombreCompleto}">Nombre</span>
+            </h4>
+            <a th:href="@{/clientes/personas/{id}/editar(id=${persona.idCliente})}"
+               class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">ID Cliente</dt>
+                <dd class="col-sm-9" th:text="${persona.idCliente}">1</dd>
+
+                <dt class="col-sm-3">Tipo de documento</dt>
+                <dd class="col-sm-9" th:text="${persona.tipoDocumento}">CC</dd>
+
+                <dt class="col-sm-3">Número de documento</dt>
+                <dd class="col-sm-9" th:text="${persona.numeroDocumento}">123456</dd>
+
+                <dt class="col-sm-3">Nombre</dt>
+                <dd class="col-sm-9" th:text="${persona.nombre}">Juan</dd>
+
+                <dt class="col-sm-3">Apellido</dt>
+                <dd class="col-sm-9" th:text="${persona.apellido}">Pérez</dd>
+
+                <dt class="col-sm-3">Fecha de nacimiento</dt>
+                <dd class="col-sm-9" th:text="${persona.fechaNacimiento}">1990-01-01</dd>
+
+                <dt class="col-sm-3">Edad</dt>
+                <dd class="col-sm-9">
+                    <span th:text="${persona.edad}">30</span> años
+                </dd>
+
+                <dt class="col-sm-3">Nacionalidad</dt>
+                <dd class="col-sm-9" th:text="${persona.nacionalidad}">Colombiana</dd>
+
+                <dt class="col-sm-3">Estado</dt>
+                <dd class="col-sm-9">
+                    <span class="badge badge-estado"
+                          th:classappend="'estado-' + ${#strings.toLowerCase(persona.estado.name())}"
+                          th:text="${persona.estado}">Activo</span>
+                </dd>
+
+                <dt class="col-sm-3">Fecha de registro</dt>
+                <dd class="col-sm-9" th:text="${persona.fechaRegistro}">2025-01-01</dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Contactos -->
+    <div th:replace="~{clientes/fragments-cliente :: seccionContactos(${persona.idCliente}, 'persona')}"></div>
+
+    <!-- Direcciones -->
+    <div th:replace="~{clientes/fragments-cliente :: seccionDirecciones(${persona.idCliente}, 'persona')}"></div>
+
+    <div class="mt-3">
+        <a th:href="@{/clientes(tab='personas')}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+</div>
+
+<!-- Modals -->
+<div th:replace="~{clientes/fragments-cliente :: modalContacto(${persona.idCliente}, 'persona')}"></div>
+<div th:replace="~{clientes/fragments-cliente :: modalDireccion(${persona.idCliente}, 'persona')}"></div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

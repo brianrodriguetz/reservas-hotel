@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Flow — Sistema de Gestión Hotelera</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-name">Stay Flow</div>
+    <div class="brand-sub">Gestión Hotelera</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section"><span class="nav-label">Principal</span></div>
+    <div class="nav-item active" onclick="nav('dashboard',this)">
+      <span class="nav-icon">◈</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('reservas',this)">
+      <span class="nav-icon">◻</span> Reservas
+    </div>
+    <div class="nav-item" onclick="nav('habitaciones',this)">
+      <span class="nav-icon">⊞</span> Habitaciones
+    </div>
+    <div class="nav-item" onclick="nav('clientes',this)">
+      <span class="nav-icon">◯</span> Clientes
+    </div>
+    <div class="nav-item" onclick="nav('huespedes',this)">
+      <span class="nav-icon">⊙</span> Huéspedes
+    </div>
+    <div class="nav-section"><span class="nav-label">Operaciones</span></div>
+    <div class="nav-item" onclick="nav('pagos',this)">
+      <span class="nav-icon">◇</span> Pagos
+    </div>
+    <div class="nav-item" onclick="nav('checkin',this)">
+      <span class="nav-icon">→</span> Check-in / Out
+    </div>
+    <div class="nav-item" onclick="nav('reembolsos',this)">
+      <span class="nav-icon">↩</span> Reembolsos
+    </div>
+    <div class="nav-section"><span class="nav-label">Admin</span></div>
+    <div class="nav-item" onclick="nav('empleados',this)">
+      <span class="nav-icon">◈</span> Empleados
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="avatar">A</div>
+    <div class="user-info">
+      <div class="user-name">Admin1 Admin</div>
+      <div class="user-role">Administrador</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="search-bar">
+        <span style="color:var(--text-dim)">⌕</span>
+        <input type="text" placeholder="Buscar reserva, cliente…">
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modalReserva')">+ Nueva Reserva</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active fade-in" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card accent">
+          <div class="stat-label">Reservas Activas</div>
+          <div class="stat-value">14</div>
+          <div class="stat-sub">3 en curso hoy</div>
+          <div class="stat-icon">◻</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Habitaciones Disponibles</div>
+          <div class="stat-value">11</div>
+          <div class="stat-sub">de 20 en total</div>
+          <div class="stat-icon">⊞</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Ingresos del Mes</div>
+          <div class="stat-value" style="font-size:22px">$5.7M</div>
+          <div class="stat-sub">COP — Mayo 2026</div>
+          <div class="stat-icon">◇</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Reembolsos Pendientes</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">$1.7M por procesar</div>
+          <div class="stat-icon">↩</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Reservas Recientes</span>
+            <button class="btn btn-ghost btn-sm" onclick="nav('reservas',null)">Ver todas →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Cliente</th><th>Check-in</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#R021</td><td>Cliente8</td><td class="muted">15 abr 2026</td><td><span class="badge badge-muted">No-show</span></td></tr>
+                <tr><td class="mono">#R020</td><td>Empresa5 SAS</td><td class="muted">10 may 2026</td><td><span class="badge badge-red">Cancelada</span></td></tr>
+                <tr><td class="mono">#R012</td><td>Cliente10</td><td class="muted">16 may 2026</td><td><span class="badge badge-accent">En Curso</span></td></tr>
+                <tr><td class="mono">#R011</td><td>Empresa3 LTDA</td><td class="muted">15 may 2026</td><td><span class="badge badge-accent">En Curso</span></td></tr>
+                <tr><td class="mono">#R010</td><td>Cliente9</td><td class="muted">14 may 2026</td><td><span class="badge badge-accent">En Curso</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Actividad de Hoy</span>
+            <span class="badge badge-muted">16 may 2026</span>
+          </div>
+          <div class="panel-body" style="padding:16px 20px">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-time">13:30 — Hoy</div>
+                <div class="tl-body">
+                  <div class="tl-title">Check-in R012 — Walk-in</div>
+                  <div class="tl-desc">Cliente10 · Hab. 102 · Efectivo $150,000</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-time">09:00 — Ayer</div>
+                <div class="tl-body">
+                  <div class="tl-title">Cancelación R020</div>
+                  <div class="tl-desc">Empresa5 SAS · Penalización 0% · Reembolso $1.5M</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-time">14:00 — 15 may</div>
+                <div class="tl-body">
+                  <div class="tl-title">Check-in R011 — Empresa3</div>
+                  <div class="tl-desc">Hab. 207 + 305 · 7 huéspedes · $4,250,000</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-time">14:15 — 14 may</div>
+                <div class="tl-body">
+                  <div class="tl-title">Check-in R010 — Cliente9</div>
+                  <div class="tl-desc">Hab. 202 · 1 huésped · $600,000</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Ocupación por Tipo de Habitación</span>
+        </div>
+        <div class="panel-body" style="padding:20px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px">
+            <div>
+              <div class="flex justify-between items-center">
+                <span style="font-size:13px;font-weight:500">Sencilla</span>
+                <span class="text-sm text-muted font-mono">3/7</span>
+              </div>
+              <div class="occ-bar"><div class="occ-fill" style="width:43%"></div></div>
+              <div class="text-sm text-muted" style="margin-top:4px">$150,000 / noche</div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center">
+                <span style="font-size:13px;font-weight:500">Doble</span>
+                <span class="text-sm text-muted font-mono">4/6</span>
+              </div>
+              <div class="occ-bar"><div class="occ-fill" style="width:66%"></div></div>
+              <div class="text-sm text-muted" style="margin-top:4px">$250,000 / noche</div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center">
+                <span style="font-size:13px;font-weight:500">Triple</span>
+                <span class="text-sm text-muted font-mono">2/4</span>
+              </div>
+              <div class="occ-bar"><div class="occ-fill" style="width:50%"></div></div>
+              <div class="text-sm text-muted" style="margin-top:4px">$350,000 / noche</div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center">
+                <span style="font-size:13px;font-weight:500">Suite</span>
+                <span class="text-sm text-muted font-mono">1/3</span>
+              </div>
+              <div class="occ-bar"><div class="occ-fill" style="width:33%"></div></div>
+              <div class="text-sm text-muted" style="margin-top:4px">$500,000 / noche</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVAS -->
+    <div class="view fade-in" id="view-reservas">
+      <div class="flex justify-between items-center mb-6">
+        <div class="chips" id="reservaChips">
+          <button class="chip active" onclick="filterReservas('all',this)">Todas (21)</button>
+          <button class="chip" onclick="filterReservas('Pendiente',this)">Pendiente</button>
+          <button class="chip" onclick="filterReservas('Confirmada',this)">Confirmada</button>
+          <button class="chip" onclick="filterReservas('En_Curso',this)">En Curso</button>
+          <button class="chip" onclick="filterReservas('Finalizada',this)">Finalizada</button>
+          <button class="chip" onclick="filterReservas('Cancelada',this)">Cancelada</button>
+          <button class="chip" onclick="filterReservas('No_Show',this)">No-show</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modalReserva')">+ Nueva</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table id="tablaReservas">
+            <thead><tr>
+              <th>ID</th><th>Canal</th><th>Cliente</th><th>Check-in</th><th>Check-out</th><th>Habitaciones</th><th>Total</th><th>Estado</th><th></th>
+            </tr></thead>
+            <tbody id="bodyReservas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HABITACIONES -->
+    <div class="view fade-in" id="view-habitaciones">
+      <div class="flex justify-between items-center mb-6">
+        <div class="chips">
+          <button class="chip active" onclick="filterRooms('all',this)">Todas</button>
+          <button class="chip" onclick="filterRooms('Disponible',this)"><span class="dot dot-green"></span>Disponible</button>
+          <button class="chip" onclick="filterRooms('Reservada',this)"><span class="dot dot-blue"></span>Reservada</button>
+          <button class="chip" onclick="filterRooms('Ocupada',this)"><span class="dot dot-accent"></span>Ocupada</button>
+          <button class="chip" onclick="filterRooms('En_Limpieza',this)"><span class="dot dot-yellow"></span>En Limpieza</button>
+          <button class="chip" onclick="filterRooms('En_Mantenimiento',this)"><span class="dot dot-red"></span>Mantenimiento</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('modalHab')">+ Habitación</button>
+      </div>
+      <div class="rooms-grid" id="roomsGrid"></div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="view fade-in" id="view-clientes">
+      <div class="flex justify-between items-center mb-6">
+        <div class="chips">
+          <button class="chip active" onclick="filterClientes('all',this)">Todos (15)</button>
+          <button class="chip" onclick="filterClientes('persona',this)">Personas (10)</button>
+          <button class="chip" onclick="filterClientes('empresa',this)">Empresas (5)</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modalCliente')">+ Cliente</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Tipo</th><th>Nombre / Razón Social</th><th>Documento</th><th>Contacto Principal</th><th>Registro</th><th>Estado</th></tr></thead>
+            <tbody id="bodyClientes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUESPEDES -->
+    <div class="view fade-in" id="view-huespedes">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-muted text-sm">20 huéspedes registrados</span>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modalHuesped')">+ Huésped</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Documento</th><th>Nacionalidad</th><th>Nacimiento</th></tr></thead>
+            <tbody id="bodyHuespedes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGOS -->
+    <div class="view fade-in" id="view-pagos">
+      <div class="flex justify-between items-center mb-6">
+        <div class="chips">
+          <button class="chip active">Todos (27)</button>
+          <button class="chip">Aprobado</button>
+          <button class="chip">Pendiente</button>
+          <button class="chip">Rechazado</button>
+          <button class="chip">Reversado</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Reserva</th><th>Medio</th><th>Monto</th><th>Fecha</th><th>Estado</th></tr></thead>
+            <tbody id="bodyPagos"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECK-IN / OUT -->
+    <div class="view fade-in" id="view-checkin">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title" style="color:var(--green)">↘ Check-in Pendientes</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Reserva</th><th>Cliente</th><th>Check-in Previsto</th><th>Hab.</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="mono">#R005</td><td>Cliente2</td>
+                  <td class="muted">25 may 2026 14:00</td><td class="muted">102</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckin()">Check-in</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">#R006</td><td>Cliente3</td>
+                  <td class="muted">01 jun 2026 14:00</td><td class="muted">105</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckin()">Check-in</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">#R007</td><td>Empresa2 SAS</td>
+                  <td class="muted">10 jun 2026 14:00</td><td class="muted">203,204,205</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckin()">Check-in</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title" style="color:var(--blue)">↗ Check-out Pendientes</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Reserva</th><th>Cliente</th><th>Check-out Previsto</th><th>Hab.</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="mono">#R012</td><td>Cliente10</td>
+                  <td class="muted">17 may 2026 11:00</td><td class="muted">102</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckout()">Check-out</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">#R010</td><td>Cliente9</td>
+                  <td class="muted">18 may 2026 11:00</td><td class="muted">202</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckout()">Check-out</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">#R011</td><td>Empresa3 LTDA</td>
+                  <td class="muted">20 may 2026 11:00</td><td class="muted">207,305</td>
+                  <td><button class="btn btn-ghost btn-sm" onclick="doCheckout()">Check-out</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REEMBOLSOS -->
+    <div class="view fade-in" id="view-reembolsos">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Solicitudes de Reembolso</span>
+          <span class="badge badge-yellow">3 solicitudes</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Cancelación</th><th>Motivo</th><th>Monto</th><th>Medio</th><th>Fecha</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono">S001</td><td class="mono">E12</td>
+                <td>Cancelación sin penalización (&gt;72h)</td>
+                <td class="text-accent font-mono">$90,000</td>
+                <td class="muted">Tarjeta Crédito</td><td class="muted">10 ene 2026</td>
+                <td><span class="badge badge-green">Procesado</span></td><td></td>
+              </tr>
+              <tr>
+                <td class="mono">S002</td><td class="mono">E13</td>
+                <td>Reembolso parcial 50% penalización</td>
+                <td class="text-accent font-mono">$200,000</td>
+                <td class="muted">Tarjeta Crédito</td><td class="muted">13 feb 2026</td>
+                <td><span class="badge badge-blue">Aprobado</span></td>
+                <td><button class="btn btn-ghost btn-sm" onclick="showToast('Procesando reembolso S002…')">Procesar</button></td>
+              </tr>
+              <tr>
+                <td class="mono">S003</td><td class="mono">E15</td>
+                <td>Reembolso completo sin penalización</td>
+                <td class="text-accent font-mono">$1,500,000</td>
+                <td class="muted">Transferencia</td><td class="muted">05 may 2026</td>
+                <td><span class="badge badge-yellow">Pendiente</span></td>
+                <td><button class="btn btn-primary btn-sm" onclick="showToast('Reembolso S003 aprobado ✓')">Autorizar</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLEADOS -->
+    <div class="view fade-in" id="view-empleados">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-muted text-sm">8 empleados activos</span>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Función disponible próximamente')">+ Empleado</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Supervisor</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">E001</td><td class="muted font-mono">admin1</td><td>Admin1 Admin</td><td><span class="badge badge-accent">Administrador</span></td><td class="muted">—</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E002</td><td class="muted font-mono">recep1</td><td>Recep1 Apellido</td><td><span class="badge badge-blue">Recepcionista</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E003</td><td class="muted font-mono">recep2</td><td>Recep2 Apellido</td><td><span class="badge badge-blue">Recepcionista</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E004</td><td class="muted font-mono">recep3</td><td>Recep3 Apellido</td><td><span class="badge badge-blue">Recepcionista</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E005</td><td class="muted font-mono">recep4</td><td>Recep4 Apellido</td><td><span class="badge badge-blue">Recepcionista</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E006</td><td class="muted font-mono">limp1</td><td>Limp1 Apellido</td><td><span class="badge badge-muted">P. Limpieza</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E007</td><td class="muted font-mono">limp2</td><td>Limp2 Apellido</td><td><span class="badge badge-muted">P. Limpieza</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+              <tr><td class="mono">E008</td><td class="muted font-mono">limp3</td><td>Limp3 Apellido</td><td><span class="badge badge-muted">P. Limpieza</span></td><td class="muted">Admin1</td><td><span class="badge badge-green">Activo</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODALES -->
+<div class="modal-overlay" id="modalReserva">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nueva Reserva</div>
+      <button class="modal-close" onclick="closeModal('modalReserva')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Cliente</label>
+          <select class="form-select">
+            <option>Cliente1 Apellido1 (CC)</option>
+            <option>Cliente2 Apellido2 (CC)</option>
+            <option>Empresa1 SAS</option>
+            <option>Empresa2 SAS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Canal</label>
+          <select class="form-select">
+            <option>Telefónica</option>
+            <option>Presencial (Walk-in)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Check-in Previsto</label>
+          <input type="datetime-local" class="form-input" value="2026-06-01T14:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Check-out Previsto</label>
+          <input type="datetime-local" class="form-input" value="2026-06-04T11:00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Habitaciones</label>
+          <select class="form-select" multiple style="height:90px">
+            <option>101 — Sencilla — Piso 1 — $150,000/noche</option>
+            <option>104 — Doble — Piso 1 — $250,000/noche</option>
+            <option>107 — Triple — Piso 1 — $350,000/noche</option>
+            <option>303 — Suite — Piso 3 — $500,000/noche</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">N° Huéspedes</label>
+          <input type="number" class="form-input" value="2" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precio Total (COP)</label>
+          <input type="text" class="form-input" value="750,000" readonly style="color:var(--accent)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalReserva')">Cancelar</button>
+      <button class="btn btn-primary" onclick="crearReserva()">Crear Reserva</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalHab">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nueva Habitación</div>
+      <button class="modal-close" onclick="closeModal('modalHab')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols-3">
+        <div class="form-group">
+          <label class="form-label">Código</label>
+          <input type="text" class="form-input" placeholder="ej. 307">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Piso</label>
+          <input type="number" class="form-input" value="3" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select class="form-select">
+            <option>Sencilla</option><option>Doble</option>
+            <option>Triple</option><option>Suite</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Estado Inicial</label>
+          <select class="form-select">
+            <option>Disponible</option><option>En_Mantenimiento</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalHab')">Cancelar</button>
+      <button class="btn btn-primary" onclick="showToast('Habitación creada ✓');closeModal('modalHab')">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalCliente">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Cliente</div>
+      <button class="modal-close" onclick="closeModal('modalCliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo de Cliente</label>
+          <select class="form-select">
+            <option value="persona">Persona Natural</option>
+            <option value="empresa">Empresa</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido</label>
+          <input type="text" class="form-input" placeholder="Apellido">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Tipo Documento</label>
+          <select class="form-select"><option>CC</option><option>CE</option><option>PA</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">N° Documento</label>
+          <input type="text" class="form-input" placeholder="1010XXX">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Fecha Nacimiento</label>
+          <input type="date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nacionalidad</label>
+          <input type="text" class="form-input" value="Colombiana">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Contacto Principal</label>
+          <input type="text" class="form-input" placeholder="3001000000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo Contacto</label>
+          <select class="form-select">
+            <option>Telefono_Movil</option>
+            <option>Telefono_Fijo</option>
+            <option>Correo_Electronico</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalCliente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="showToast('Cliente creado ✓');closeModal('modalCliente')">Crear Cliente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalHuesped">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Huésped</div>
+      <button class="modal-close" onclick="closeModal('modalHuesped')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido</label>
+          <input type="text" class="form-input">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Tipo Documento</label>
+          <select class="form-select"><option>CC</option><option>CE</option><option>PA</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">N° Documento</label>
+          <input type="text" class="form-input">
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Fecha Nacimiento</label>
+          <input type="date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nacionalidad</label>
+          <input type="text" class="form-input" value="Colombiana">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalHuesped')">Cancelar</button>
+      <button class="btn btn-primary" onclick="showToast('Huésped registrado ✓');closeModal('modalHuesped')">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

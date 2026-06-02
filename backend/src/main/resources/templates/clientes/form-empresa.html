@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'crear' ? 'Nueva empresa' : 'Editar empresa'})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('clientes')}"></nav>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/clientes(tab='empresas')}">Clientes</a></li>
+            <li class="breadcrumb-item active"
+                th:text="${modo == 'crear' ? 'Nueva empresa' : 'Editar empresa'}">Form</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi"
+                   th:classappend="${modo == 'crear'} ? 'bi-building-add' : 'bi-building-gear'"></i>
+                <span th:text="${modo == 'crear' ? 'Nueva empresa' : 'Editar empresa'}">Form</span>
+            </h4>
+        </div>
+        <div class="card-body">
+
+            <form th:action="${modo == 'crear'}
+                              ? @{/clientes/empresas}
+                              : @{/clientes/empresas/{id}/actualizar(id=${empresa.idCliente})}"
+                  th:object="${empresa}" method="post">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="nit" class="form-label">NIT *</label>
+                        <input type="text" id="nit" th:field="*{nit}"
+                               class="form-control" maxlength="20" required
+                               placeholder="900.123.456-7">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('nit')}"
+                             th:errors="*{nit}"></div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label for="razonSocial" class="form-label">Razón social *</label>
+                        <input type="text" id="razonSocial" th:field="*{razonSocial}"
+                               class="form-control" maxlength="150" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('razonSocial')}"
+                             th:errors="*{razonSocial}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="representanteLegal" class="form-label">Representante legal *</label>
+                        <input type="text" id="representanteLegal" th:field="*{representanteLegal}"
+                               class="form-control" maxlength="200" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('representanteLegal')}"
+                             th:errors="*{representanteLegal}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="sectorEconomico" class="form-label">Sector económico *</label>
+                        <input type="text" id="sectorEconomico" th:field="*{sectorEconomico}"
+                               class="form-control" maxlength="100" required
+                               placeholder="Ej: Tecnología, Salud, Manufactura...">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('sectorEconomico')}"
+                             th:errors="*{sectorEconomico}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${e.name()}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/clientes(tab='empresas')}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i>
+                        <span th:text="${modo == 'crear' ? 'Crear empresa' : 'Guardar cambios'}">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

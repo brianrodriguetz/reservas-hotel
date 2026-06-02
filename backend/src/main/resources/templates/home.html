@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('home')}"></nav>
+
+<div class="container mt-5" th:with="u=${session.usuarioSesion}">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold">
+                Bienvenido, <span th:text="${u.nombreCompleto}">Empleado</span>
+            </h1>
+            <p class="lead text-muted">
+                Sesión iniciada como <strong th:text="${u.rol}">Rol</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <!-- Card Habitaciones (todos) -->
+        <div class="col-md-4">
+            <a th:href="@{/habitaciones}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-door-closed display-1 text-primary"></i>
+                        <h4 class="mt-3">Habitaciones</h4>
+                        <p class="text-muted mb-0">Gestionar habitaciones del hotel y sus estados.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Clientes (admin + recep) -->
+        <div class="col-md-4" th:if="${u.administrador or u.recepcionista}">
+            <a th:href="@{/clientes}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-people display-1 text-success"></i>
+                        <h4 class="mt-3">Clientes</h4>
+                        <p class="text-muted mb-0">Registrar personas y empresas.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Reservas (admin + recep) -->
+        <div class="col-md-4" th:if="${u.administrador or u.recepcionista}">
+            <a th:href="@{/reservas}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-calendar-check display-1 text-warning"></i>
+                        <h4 class="mt-3">Reservas</h4>
+                        <p class="text-muted mb-0">Crear y consultar reservas del hotel.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Limpieza (admin + limpieza) -->
+        <div class="col-md-4" th:if="${u.administrador or u.personalLimpieza}">
+            <a th:href="@{/limpieza}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-droplet display-1 text-info"></i>
+                        <h4 class="mt-3">Limpieza</h4>
+                        <p class="text-muted mb-0">Habitaciones pendientes de limpieza.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Empleados (admin) -->
+        <div class="col-md-4" th:if="${u.administrador}">
+            <a th:href="@{/empleados}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-person-badge display-1 text-secondary"></i>
+                        <h4 class="mt-3">Empleados</h4>
+                        <p class="text-muted mb-0">Gestionar personal del hotel.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Reembolsos (admin) -->
+        <div class="col-md-4" th:if="${u.administrador}">
+            <a th:href="@{/reembolsos}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm card-hover">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-cash-coin display-1 text-danger"></i>
+                        <h4 class="mt-3">Reembolsos</h4>
+                        <p class="text-muted mb-0">Solicitudes pendientes de aprobación.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+</body>
+</html>

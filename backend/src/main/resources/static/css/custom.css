@@ -1,0 +1,56 @@
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main, .container {
+    flex: 1 0 auto;
+}
+
+.card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.badge-estado {
+    font-size: 0.85rem;
+    padding: 0.4em 0.7em;
+}
+
+/* Colores semánticos para estados */
+.estado-disponible    { background-color: #198754; color: #fff; }
+.estado-reservada     { background-color: #0d6efd; color: #fff; }
+.estado-ocupada       { background-color: #fd7e14; color: #fff; }
+.estado-en_limpieza      { background-color: #6c757d; color: #fff; }
+.estado-en_mantenimiento { background-color: #dc3545; color: #fff; }
+
+.estado-pendiente   { background-color: #ffc107; color: #000; }
+.estado-confirmada  { background-color: #0d6efd; color: #fff; }
+.estado-en_curso    { background-color: #fd7e14; color: #fff; }
+.estado-finalizada  { background-color: #198754; color: #fff; }
+.estado-cancelada   { background-color: #dc3545; color: #fff; }
+.estado-no_show     { background-color: #6c757d; color: #fff; }
+
+.estado-activo   { background-color: #198754; color: #fff; }
+.estado-inactivo { background-color: #6c757d; color: #fff; }
+
+
+.canal-telefonica { background-color: #6610f2; color: #fff; }
+.canal-presencial { background-color: #20c997; color: #fff; }
+
+
+.estado-procesado { background-color: #198754; color: #fff; }
+.estado-rechazado { background-color: #dc3545; color: #fff; }
+
+
+.form-label { font-weight: 500; }

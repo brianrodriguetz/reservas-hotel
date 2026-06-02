@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'crear' ? 'Nuevo empleado' : 'Editar empleado'})}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('empleados')}"></nav>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/empleados}">Empleados</a></li>
+            <li class="breadcrumb-item active"
+                th:text="${modo == 'crear' ? 'Nuevo' : 'Editar'}">Form</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">
+                <i class="bi"
+                   th:classappend="${modo == 'crear'} ? 'bi-person-plus' : 'bi-person-gear'"></i>
+                <span th:text="${modo == 'crear' ? 'Nuevo empleado' : 'Editar empleado'}">Form</span>
+            </h4>
+        </div>
+        <div class="card-body">
+           
+            <div th:if="${mensajeError}" class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span th:text="${mensajeError}"></span>
+</div>
+
+            <form th:action="${modo == 'crear'}
+                              ? @{/empleados}
+                              : @{/empleados/{id}/actualizar(id=${empleado.idEmpleado})}"
+                  th:object="${empleado}" method="post">
+
+                <input type="hidden" th:field="*{idEmpleado}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="usuario" class="form-label">Usuario *</label>
+                        <input type="text" id="usuario" th:field="*{usuario}"
+                               class="form-control" maxlength="50" required
+                               placeholder="Ej: recep5">
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            El usuario también funciona como contraseña en esta demo.
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('usuario')}"
+                             th:errors="*{usuario}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="numeroDocumento" class="form-label">Número de documento *</label>
+                        <input type="text" id="numeroDocumento" th:field="*{numeroDocumento}"
+                               class="form-control" maxlength="20" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('numeroDocumento')}"
+                             th:errors="*{numeroDocumento}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">Nombre(s) *</label>
+                        <input type="text" id="nombre" th:field="*{nombre}"
+                               class="form-control" maxlength="100" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}"
+                             th:errors="*{nombre}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label">Apellido(s) *</label>
+                        <input type="text" id="apellido" th:field="*{apellido}"
+                               class="form-control" maxlength="100" required>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('apellido')}"
+                             th:errors="*{apellido}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="idRol" class="form-label">Rol *</label>
+                        <select id="idRol" th:field="*{idRol}" class="form-select" required>
+                            <option value="">— Seleccionar rol —</option>
+                            <option th:each="r : ${roles}"
+                                    th:value="${r.idRol}"
+                                    th:text="${#strings.replace(r.nombre.name(), '_', ' ')}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('idRol')}"
+                             th:errors="*{idRol}"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${e.name()}"></option>
+                        </select>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('estado')}"
+                             th:errors="*{estado}"></div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="idSupervisor" class="form-label">Supervisor</label>
+                        <select id="idSupervisor" th:field="*{idSupervisor}" class="form-select">
+                            <option value="">— Sin supervisor (solo para Administrador) —</option>
+                            <option th:each="s : ${posiblesSupervisores}"
+                                    th:value="${s.idEmpleado}"
+                                    th:text="${s.usuario} + ' — ' + ${s.nombreCompleto}"></option>
+                        </select>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            Solo el rol Administrador puede no tener supervisor. Un empleado no puede supervisarse a sí mismo.
+                        </div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('idSupervisor')}"
+                             th:errors="*{idSupervisor}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/empleados}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i>
+                        <span th:text="${modo == 'crear' ? 'Crear empleado' : 'Guardar cambios'}">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

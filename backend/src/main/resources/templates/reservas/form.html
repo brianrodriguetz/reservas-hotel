@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nueva reserva')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('reservas')}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/reservas}">Reservas</a></li>
+            <li class="breadcrumb-item active">Nueva reserva</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> Nueva reserva</h4>
+        </div>
+        <div class="card-body">
+
+            <div class="alert alert-info small mb-4">
+                <i class="bi bi-info-circle"></i>
+                Llena los datos generales, agreg las habitaciones que necesite el cliente y haz click en <strong>Crear reserva</strong>.
+                El sistema calculará automáticamente el precio total como
+                <code>(precio base por noche × número de noches × habitaciones)</code>.
+            </div>
+
+            <form th:action="@{/reservas}" th:object="${reserva}" method="post" id="formReserva">
+
+                <!-- ===== Datos generales ===== -->
+                <h5 class="mb-3"><i class="bi bi-info-circle"></i> Datos generales</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <label for="idCliente" class="form-label">Cliente *</label>
+                        <select id="idCliente" th:field="*{idCliente}" class="form-select" required>
+                            <option value="">— Seleccionar cliente —</option>
+                            <optgroup label="Personas">
+                                <option th:each="p : ${personas}"
+                                        th:value="${p.idCliente}"
+                                        th:text="${p.numeroDocumento} + ' — ' + ${p.nombreCompleto}"></option>
+                            </optgroup>
+                            <optgroup label="Empresas">
+                                <option th:each="e : ${empresas}"
+                                        th:value="${e.idCliente}"
+                                        th:text="${e.nit} + ' — ' + ${e.razonSocial}"></option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaCheckInPrevista" class="form-label">Check-in previsto *</label>
+                        <input type="datetime-local" id="fechaCheckInPrevista"
+                               th:field="*{fechaCheckInPrevista}"
+                               class="form-control" required>
+                        <div class="form-text small text-muted">Hora estándar: 14:00</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaCheckOutPrevista" class="form-label">Check-out previsto *</label>
+                        <input type="datetime-local" id="fechaCheckOutPrevista"
+                               th:field="*{fechaCheckOutPrevista}"
+                               class="form-control" required>
+                        <div class="form-text small text-muted">Hora estándar: 11:00</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="canal" class="form-label">Canal *</label>
+                        <select id="canal" th:field="*{canal}" class="form-select" required>
+                            <option th:each="c : ${canales}" th:value="${c.name()}" th:text="${c.name()}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado inicial *</label>
+                        <select id="estado" th:field="*{estado}" class="form-select" required>
+                            <option th:each="e : ${estados}"
+                                    th:value="${e.name()}"
+                                    th:text="${#strings.replace(e.name(), '_', ' ')}"></option>
+                        </select>
+                        <div class="form-text small text-muted">Lo normal es <code>Pendiente</code>.</div>
+                    </div>
+
+                    <!-- precioTotal hidden: lo calcula el backend -->
+                    <input type="hidden" th:field="*{precioTotal}" value="0">
+                </div>
+
+                <hr>
+
+                <!-- ===== Habitaciones ===== -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="bi bi-door-closed"></i> Habitaciones reservadas</h5>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="btnAgregarHab">
+                        <i class="bi bi-plus-lg"></i> Agregar habitación
+                    </button>
+                </div>
+
+                <div th:if="${habitacionesDisponibles.isEmpty()}" class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    No hay habitaciones <strong>Disponibles</strong> en este momento. No se puede crear la reserva.
+                </div>
+
+                <!-- Fila plantilla (oculta, se clona con JS) -->
+                <template id="plantillaFilaHab">
+                    <div class="fila-habitacion card mb-2">
+                        <div class="card-body py-2">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-8">
+                                    <label class="form-label small mb-1">Habitación *</label>
+                                    <select name="habitacionId" class="form-select form-select-sm" required>
+                                        <option value="">— Seleccionar habitación disponible —</option>
+                                        <option th:each="h : ${habitacionesDisponibles}"
+                                                th:with="t=${tipos.?[idTipo == __${h.idTipo}__][0]}"
+                                                th:value="${h.idHabitacion}"
+                                                th:text="${h.codigo} + ' — Piso ' + ${h.piso} +
+                                                         ' — ' + (${t != null} ? ${t.nombre} : '?') +
+                                                         ' (cap. máx ' + (${t != null} ? ${t.capacidadMax} : '?') + ')' +
+                                                         ' — ' + (${t != null} ? ${#numbers.formatDecimal(t.precioBaseNoche, 0, 'COMMA', 0, 'POINT')} : '?') + ' COP/noche'"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small mb-1">Huéspedes *</label>
+                                    <input type="number" name="huespedes" class="form-control form-control-sm"
+                                           min="1" max="127" value="1" required>
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-quitar-fila"
+                                            title="Quitar">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div id="contenedorHabitaciones" class="mb-3">
+                    <!-- Las filas se inyectan acá -->
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a th:href="@{/reservas}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Crear reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const contenedor = document.getElementById('contenedorHabitaciones');
+    const plantilla = document.getElementById('plantillaFilaHab');
+
+    function agregarFila() {
+        const clone = plantilla.content.cloneNode(true);
+        const fila = clone.querySelector('.fila-habitacion');
+        fila.querySelector('.btn-quitar-fila').addEventListener('click', () => fila.remove());
+        contenedor.appendChild(clone);
+    }
+
+    document.getElementById('btnAgregarHab').addEventListener('click', agregarFila);
+
+    // Agregar una fila inicial al cargar
+    agregarFila();
+
+    // Validacion minima en cliente
+    document.getElementById('formReserva').addEventListener('submit', (e) => {
+        const filas = contenedor.querySelectorAll('.fila-habitacion');
+        if (filas.length === 0) {
+            e.preventDefault();
+            alert('Debe agregar al menos una habitación.');
+        }
+    });
+</script>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

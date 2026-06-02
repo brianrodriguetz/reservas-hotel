@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detalle reserva')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar('reservas')}"></nav>
+<div th:replace="~{fragments/layout :: alertas}"></div>
+
+<div class="container mt-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/reservas}">Reservas</a></li>
+            <li class="breadcrumb-item active"
+                th:text="'Reserva #' + ${reserva.idReserva}">Detalle</li>
+        </ol>
+    </nav>
+
+    <!-- ===== Header con estado ===== -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h4 class="mb-0">
+                <i class="bi bi-calendar-check"></i>
+                Reserva #<span th:text="${reserva.idReserva}">1</span>
+            </h4>
+            <div>
+                <span class="badge badge-estado fs-6 me-2"
+                      th:classappend="'estado-' + ${#strings.toLowerCase(reserva.estado.name())}"
+                      th:text="${#strings.replace(reserva.estado.name(), '_', ' ')}">Pendiente</span>
+                <span class="badge badge-estado fs-6"
+                      th:classappend="'canal-' + ${#strings.toLowerCase(reserva.canal.name())}"
+                      th:text="${reserva.canal}">Telefonica</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Cliente</dt>
+                <dd class="col-sm-9" th:text="${clientesPorId[reserva.idCliente] ?: ('Cliente #' + reserva.idCliente)}">Cliente</dd>
+
+                <dt class="col-sm-3">Fecha de creación</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(reserva.fechaCreacion, 'dd/MM/yyyy HH:mm')}">—</dd>
+
+                <dt class="col-sm-3">Check-in previsto</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(reserva.fechaCheckInPrevista, 'dd/MM/yyyy HH:mm')}">—</dd>
+
+                <dt class="col-sm-3">Check-out previsto</dt>
+                <dd class="col-sm-9" th:text="${#temporals.format(reserva.fechaCheckOutPrevista, 'dd/MM/yyyy HH:mm')}">—</dd>
+
+                <dt class="col-sm-3">Número de noches</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-info text-dark" th:text="${reserva.numeroNoches}">2</span>
+                </dd>
+
+                <dt class="col-sm-3">Precio total</dt>
+                <dd class="col-sm-9">
+                    <strong class="fs-5"
+                            th:text="${#numbers.formatDecimal(reserva.precioTotal, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</strong>
+                </dd>
+
+                <dt class="col-sm-3">Total pagado (aprobado)</dt>
+                <dd class="col-sm-9">
+                    <span class="text-success fw-semibold"
+                          th:text="${#numbers.formatDecimal(totalAprobado, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</span>
+                </dd>
+
+                <dt class="col-sm-3">Saldo pendiente</dt>
+                <dd class="col-sm-9">
+                    <span class="fw-semibold"
+                          th:classappend="${saldoPendiente.signum() == 0} ? 'text-success' : 'text-danger'"
+                          th:text="${#numbers.formatDecimal(saldoPendiente, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- ===== Acciones del ciclo de vida (botones segun el estado actual) ===== -->
+    <div class="card shadow-sm mb-3 border-primary">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Acciones del ciclo de vida</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">
+                <i class="bi bi-info-circle"></i>
+                Los botones disponibles dependen del estado actual de la reserva según las reglas del negocio.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+
+                <!-- Confirmar (Pendiente -> Confirmada) -->
+                <form th:if="${reserva.estado.name() == 'Pendiente'}"
+                      th:action="@{/reservas/{id}/estado(id=${reserva.idReserva})}" method="post">
+                    <input type="hidden" name="nuevoEstado" value="Confirmada">
+                    <button type="submit" class="btn btn-primary"
+                            onclick="return confirm('¿Confirmar esta reserva? Recordá que requiere garantía del 30%.');">
+                        <i class="bi bi-check-circle"></i> Confirmar reserva
+                    </button>
+                </form>
+
+                <!-- Check-In (Confirmada -> En_Curso) -->
+                <form th:if="${reserva.estado.name() == 'Confirmada'}"
+                      th:action="@{/reservas/{id}/check-in(id=${reserva.idReserva})}" method="post">
+                    <button type="submit" class="btn btn-success"
+                            onclick="return confirm('¿Realizar Check-In ahora? Asegurate de que el pago esté completo y los huéspedes registrados.');">
+                        <i class="bi bi-box-arrow-in-right"></i> Realizar Check-In
+                    </button>
+                </form>
+
+                <!-- Check-Out (En_Curso -> Finalizada) -->
+                <form th:if="${reserva.estado.name() == 'En_Curso'}"
+                      th:action="@{/reservas/{id}/check-out(id=${reserva.idReserva})}" method="post">
+                    <button type="submit" class="btn btn-success"
+                            onclick="return confirm('¿Realizar Check-Out ahora?');">
+                        <i class="bi bi-box-arrow-right"></i> Realizar Check-Out
+                    </button>
+                </form>
+
+                <!-- Cancelar (solo Pendiente o Confirmada): abre modal -->
+                <button th:if="${reserva.estado.name() == 'Pendiente' or reserva.estado.name() == 'Confirmada'}"
+                        type="button" class="btn btn-danger"
+                        data-bs-toggle="modal" data-bs-target="#modalCancelar">
+                    <i class="bi bi-x-octagon"></i> Cancelar reserva
+                </button>
+
+                <!-- Marcar No-Show (Confirmada): si paso la fecha prevista de check-in -->
+                <form th:if="${reserva.estado.name() == 'Confirmada'}"
+                      th:action="@{/reservas/{id}/estado(id=${reserva.idReserva})}" method="post">
+                    <input type="hidden" name="nuevoEstado" value="No_Show">
+                    <button type="submit" class="btn btn-outline-secondary"
+                            onclick="return confirm('¿Marcar como No-Show? Aplica si el cliente no se presentó antes de las 23:59 de la fecha prevista. Penalización: 100%, sin reembolso.');">
+                        <i class="bi bi-person-x"></i> Marcar No-Show
+                    </button>
+                </form>
+
+                <!-- Mensaje si no hay acciones disponibles -->
+                <p th:if="${reserva.estado.name() == 'Finalizada' or reserva.estado.name() == 'Cancelada' or reserva.estado.name() == 'No_Show'}"
+                   class="text-muted mb-0 align-self-center">
+                    <i class="bi bi-check2-circle"></i>
+                    Esta reserva ya está en estado final. No hay acciones disponibles.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Cambio rapido de estado (puerta administrativa) ===== -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white">
+            <h6 class="mb-0"><i class="bi bi-arrow-repeat"></i> Cambio manual de estado (administrativo)</h6>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/reservas/{id}/estado(id=${reserva.idReserva})}" method="post"
+                  class="row g-2 align-items-end"
+                  onsubmit="return confirm('¿Forzar cambio de estado? Esto omite las validaciones del flujo normal.');">
+                <div class="col-md-8">
+                    <select name="nuevoEstado" class="form-select form-select-sm" required>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="En_Curso">En Curso</option>
+                        <option value="Finalizada">Finalizada</option>
+                        <option value="Cancelada">Cancelada</option>
+                        <option value="No_Show">No Show</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-warning btn-sm w-100">
+                        <i class="bi bi-arrow-right-circle"></i> Forzar cambio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+        <!-- ===== Habitaciones asociadas ===== -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-door-closed"></i> Habitaciones asociadas</h5>
+            <button type="button" class="btn btn-sm btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#modalAsociarHabitacion">
+                <i class="bi bi-plus-lg"></i> Asociar habitación
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Tipo</th>
+                        <th>Piso</th>
+                        <th>Capacidad máx</th>
+                        <th class="text-center">Huéspedes asignados</th>
+                        <th class="text-end">Precio/noche (COP)</th>
+                        <th class="text-end">Subtotal estancia</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${habitacionesAsociadas.isEmpty()}">
+                        <td colspan="8" class="text-center text-muted py-3">
+                            <i class="bi bi-inbox"></i> Sin habitaciones asociadas todavía.
+                        </td>
+                    </tr>
+                    <tr th:each="rh : ${habitacionesAsociadas}"
+                        th:with="hab=${habitacionPorId[rh.idHabitacion]},
+                                 tipo=${hab != null ? tipoPorId[hab.idTipo] : null}">
+                        <td>
+                            <strong th:text="${hab != null ? hab.codigo : '#' + rh.idHabitacion}">A101</strong>
+                        </td>
+                        <td>
+                            <span th:if="${tipo != null}" th:text="${tipo.nombre}">Sencilla</span>
+                            <span th:if="${tipo == null}" class="text-muted">—</span>
+                        </td>
+                        <td th:text="${hab != null ? hab.piso : '—'}">1</td>
+                        <td th:text="${tipo != null ? tipo.capacidadMax : '—'}">2</td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark"
+                                  th:text="${rh.numeroHuespedes}">1</span>
+                        </td>
+                        <td class="text-end">
+                            <span th:if="${tipo != null}"
+                                  th:text="${#numbers.formatDecimal(tipo.precioBaseNoche, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            <span th:if="${tipo == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-end">
+                            <strong th:if="${tipo != null and reserva.numeroNoches != null}"
+                                    th:text="${#numbers.formatDecimal(
+                                        tipo.precioBaseNoche.multiply(new java.math.BigDecimal(reserva.numeroNoches)),
+                                        0, 'COMMA', 0, 'POINT')}">0</strong>
+                            <span th:unless="${tipo != null and reserva.numeroNoches != null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-end">
+                            <form th:action="@{/reservas/{id}/habitaciones/{idHab}/quitar(id=${reserva.idReserva},idHab=${rh.idHabitacion})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Quitar esta habitación de la reserva?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Quitar">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot th:if="${!habitacionesAsociadas.isEmpty()}">
+                    <tr class="table-light">
+                        <td colspan="6" class="text-end">
+                            <strong>Precio sugerido total ( <span th:text="${reserva.numeroNoches}">0</span> noches ):</strong>
+                        </td>
+                        <td class="text-end">
+                            <strong class="text-primary"
+                                    th:text="${#numbers.formatDecimal(precioSugerido, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</strong>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr th:if="${precioSugerido.compareTo(reserva.precioTotal) != 0}">
+                        <td colspan="8" class="small text-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            El precio sugerido difiere del precio total registrado en la reserva
+                            (<strong th:text="${#numbers.formatDecimal(reserva.precioTotal, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</strong>).
+                            Si querés sincronizarlo, editá la reserva manualmente.
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- ===== Pagos ===== -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Pagos</h5>
+            <button type="button" class="btn btn-sm btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#modalPago">
+                <i class="bi bi-plus-lg"></i> Registrar pago
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Medio</th>
+                        <th>Estado</th>
+                        <th class="text-end">Monto (COP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${pagos.isEmpty()}">
+                        <td colspan="5" class="text-center text-muted py-3">
+                            <i class="bi bi-inbox"></i> Sin pagos registrados.
+                        </td>
+                    </tr>
+                    <tr th:each="p : ${pagos}">
+                        <td th:text="'#' + ${p.idPago}">#1</td>
+                        <td><small th:text="${#temporals.format(p.fechaPago, 'dd/MM/yyyy HH:mm')}">—</small></td>
+                        <td>
+                            <span class="badge bg-light text-dark border"
+                                  th:text="${#strings.replace(p.medio.name(), '_', ' ')}">Efectivo</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-estado"
+                                  th:classappend="'estado-' + ${#strings.toLowerCase(p.estado.name())}"
+                                  th:text="${p.estado}">Aprobado</span>
+                        </td>
+                        <td class="text-end">
+                            <strong th:text="${#numbers.formatDecimal(p.monto, 0, 'COMMA', 0, 'POINT')}">0</strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a th:href="@{/reservas}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ========== MODAL REGISTRAR PAGO ============ -->
+<!-- ============================================ -->
+<div class="modal fade" id="modalPago" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/reservas/{id}/pagos(id=${reserva.idReserva})}"
+                  th:object="${nuevoPago}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-cash-coin"></i> Registrar pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="pagoMonto" class="form-label">Monto (COP) *</label>
+                            <input type="number" id="pagoMonto" th:field="*{monto}"
+                                   class="form-control" step="1" min="1" required
+                                   th:placeholder="${saldoPendiente}">
+                            <div class="form-text small">
+                                <i class="bi bi-info-circle"></i>
+                                Saldo pendiente:
+                                <strong th:text="${#numbers.formatDecimal(saldoPendiente, 0, 'COMMA', 0, 'POINT')} + ' COP'">0 COP</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="pagoMedio" class="form-label">Medio de pago *</label>
+                            <select id="pagoMedio" th:field="*{medio}" class="form-select" required>
+                                <option value="">— Seleccionar —</option>
+                                <option th:each="m : ${mediosPago}"
+                                        th:value="${m.name()}"
+                                        th:text="${#strings.replace(m.name(), '_', ' ')}"></option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="pagoEstado" class="form-label">Estado *</label>
+                            <select id="pagoEstado" th:field="*{estado}" class="form-select" required>
+                                <option th:each="s : ${estadosPago}"
+                                        th:value="${s.name()}"
+                                        th:text="${s}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Registrar pago
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- ========== MODAL CANCELAR ================== -->
+<!-- ============================================ -->
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/reservas/{id}/cancelar(id=${reserva.idReserva})}"
+                  th:object="${nuevaCancelacion}" method="post">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-x-octagon"></i> Cancelar reserva</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning small mb-3">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Política de penalización:</strong><br>
+                        &gt; 72h antes del check-in: 0% (reembolso total)<br>
+                        24h - 72h antes: 50%<br>
+                        &lt; 24h antes: 100% (sin reembolso)
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cancMotivo" class="form-label">Motivo *</label>
+                        <textarea id="cancMotivo" th:field="*{motivo}"
+                                  class="form-control" rows="3" required
+                                  placeholder="Ej: El cliente solicitó cancelación por motivos personales..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cancPenalizacion" class="form-label">Penalización (%)</label>
+                        <input type="number" id="cancPenalizacion" th:field="*{penalizacion}"
+                               class="form-control" step="0.01" min="0" max="100" required>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            Sugerido automáticamente según el momento. Editable por el Administrador.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Volver</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-octagon"></i> Confirmar cancelación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ============================================ -->
+<!-- ========== MODAL ASOCIAR HABITACION ======== -->
+<!-- ============================================ -->
+<div class="modal fade" id="modalAsociarHabitacion" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/reservas/{id}/habitaciones(id=${reserva.idReserva})}"
+                  th:object="${nuevaAsociacion}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-door-closed"></i> Asociar habitación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        Solo se muestran habitaciones en estado <strong>Disponible</strong>.
+                        El número de huéspedes no puede superar la capacidad máxima del tipo.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="asocIdHabitacion" class="form-label">Habitación *</label>
+                        <select id="asocIdHabitacion" th:field="*{idHabitacion}"
+                                class="form-select" required>
+                            <option value="">— Seleccionar habitación disponible —</option>
+                            <option th:each="h : ${habitacionesDisponibles}"
+                                    th:with="t=${tipoPorId[h.idTipo]}"
+                                    th:value="${h.idHabitacion}"
+                                    th:text="${h.codigo} + ' — Piso ' + ${h.piso} +
+                                             ' — ' + (${t != null} ? ${t.nombre} : '?') +
+                                             ' (cap. ' + (${t != null} ? ${t.capacidadMax} : '?') + ')' +
+                                             ' — ' + (${t != null} ? ${#numbers.formatDecimal(t.precioBaseNoche, 0, 'COMMA', 0, 'POINT')} : '?') + ' COP/noche'"></option>
+                        </select>
+                        <div th:if="${habitacionesDisponibles.isEmpty()}"
+                             class="text-warning small mt-1">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            No hay habitaciones Disponibles en este momento.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="asocNumeroHuespedes" class="form-label">Número de huéspedes *</label>
+                        <input type="number" id="asocNumeroHuespedes" th:field="*{numeroHuespedes}"
+                               class="form-control" min="1" max="127" required>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle"></i>
+                            Debe ser al menos 1 y no superar la capacidad del tipo de habitación.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"
+                            th:disabled="${habitacionesDisponibles.isEmpty()}">
+                        <i class="bi bi-check-lg"></i> Asociar habitación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
